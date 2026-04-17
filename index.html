@@ -702,10 +702,12 @@ async function deleteSchedule(id) {
 }
 
 // ── 設定 ──────────────────────────────────────
+var settingsLoaded = false;
 function loadSettingsForm() {
   document.getElementById('cfg-event').value=db.settings.event||'';
   document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';
-  renderMemberEditor();
+  // 只有第一次進入設定頁面才渲染組員編輯器，避免輸入中重新渲染導致閃退
+  if (!settingsLoaded) { renderMemberEditor(); settingsLoaded=true; }
   var tc=document.getElementById('tag-chat');
   if(chatUrl){tc.textContent='已設定 ✓';tc.className='cfg-tag set';}else{tc.textContent='未設定';tc.className='cfg-tag';}
 }
@@ -723,6 +725,7 @@ async function saveMemberList() {
   db.members=list;
   await gsSave();
   fillSelect('asgn-assignee','— 選擇負責組員 —');
+  settingsLoaded=false;
   toast('組員名單已儲存並同步');
 }
 function promptChat() {
