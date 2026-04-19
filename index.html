@@ -33,16 +33,15 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .sv-blue{color:var(--blue)}.sv-green{color:var(--green)}.sv-amber{color:var(--amber)}.sv-red{color:var(--red)}
 .workload-card{background:white;border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:16px}
 .workload-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:12px}
-.member-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.member-row:last-child{margin-bottom:0}
-.member-avatar{width:28px;height:28px;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.member-name{font-size:13px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.member-bar-wrap{width:80px;height:6px;background:var(--paper2);border-radius:3px;overflow:hidden;flex-shrink:0}
-.member-bar-fill{height:100%;border-radius:3px;background:var(--blue);transition:width .4s}
-.member-bar-fill.busy{background:var(--amber)}
-.member-bar-fill.full{background:var(--red)}
-.member-count{font-size:12px;font-family:'Space Mono',monospace;color:var(--muted);min-width:24px;text-align:right;flex-shrink:0}
-.member-count.has-work{color:var(--ink);font-weight:700}
+.wl-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.wl-row:last-child{margin-bottom:0}
+.wl-avatar{width:28px;height:28px;border-radius:50%;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.wl-name{font-size:13px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wl-bar-wrap{width:80px;height:6px;background:var(--paper2);border-radius:3px;overflow:hidden;flex-shrink:0}
+.wl-bar-fill{height:100%;border-radius:3px;background:var(--blue);transition:width .4s}
+.wl-bar-fill.busy{background:var(--amber)}.wl-bar-fill.full{background:var(--red)}
+.wl-count{font-size:12px;font-family:'Space Mono',monospace;color:var(--muted);min-width:24px;text-align:right;flex-shrink:0}
+.wl-count.has-work{color:var(--ink);font-weight:700}
 .poster-card{background:white;border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
 .pc-inner{padding:14px}
 .pc-row{display:flex;gap:12px;align-items:flex-start}
@@ -50,7 +49,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .pc-thumb-ph{width:60px;height:60px;border-radius:8px;background:var(--paper2);border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;color:var(--hint)}
 .pc-info{flex:1;min-width:0}
 .pc-name{font-weight:700;font-size:14px;line-height:1.3;margin-bottom:2px}
-.pc-meta{font-size:12px;color:var(--muted)}
+.pc-sub{font-size:12px;color:var(--muted)}
 .pc-assignee{font-size:11px;color:var(--blue);font-weight:500;margin-top:2px}
 .pc-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
 .prog-bar{height:4px;background:var(--paper2);border-radius:2px;overflow:hidden;margin:10px 0 3px}
@@ -59,32 +58,21 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .prog-label{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace}
 .reject-note{font-size:12px;color:var(--red);background:var(--red-light);border-radius:var(--rs);padding:7px 10px;margin-top:8px;border-left:3px solid var(--red);line-height:1.5}
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;font-family:'Space Mono',monospace}
-.b-draft{background:var(--paper2);color:var(--muted)}
-.b-submitted{background:var(--amber-light);color:var(--amber)}
-.b-approved{background:var(--green-light);color:var(--green)}
-.b-rejected{background:var(--red-light);color:var(--red)}
+.b-draft{background:var(--paper2);color:var(--muted)}.b-submitted{background:var(--amber-light);color:var(--amber)}.b-approved{background:var(--green-light);color:var(--green)}.b-rejected{background:var(--red-light);color:var(--red)}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;border:none;transition:opacity .15s;font-family:'Noto Sans TC',sans-serif;min-height:44px}
 .btn:active{opacity:.75}
-.btn-primary{background:var(--ink);color:var(--paper)}
-.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}
-.btn-success{background:var(--green-light);color:var(--green);border:1.5px solid #b7dfc2}
-.btn-danger{background:var(--red-light);color:var(--red);border:1.5px solid #f5c1be}
-.btn-sm{padding:6px 10px;font-size:12px;min-height:32px}
-.btn-icon{padding:8px;min-height:36px;min-width:36px;border-radius:8px}
-.btn-full{width:100%}
+.btn-primary{background:var(--ink);color:var(--paper)}.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--border)}.btn-success{background:var(--green-light);color:var(--green);border:1.5px solid #b7dfc2}.btn-danger{background:var(--red-light);color:var(--red);border:1.5px solid #f5c1be}
+.btn-sm{padding:6px 10px;font-size:12px;min-height:32px}.btn-icon{padding:8px;min-height:36px;min-width:36px;border-radius:8px}.btn-full{width:100%}
 .fg{margin-bottom:14px}
 .fl{font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:.08em;font-family:'Space Mono',monospace}
 .fi,.ft,.fs{width:100%;padding:11px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:15px;font-family:inherit;background:white;color:var(--ink);-webkit-appearance:none}
 .fi:focus,.ft:focus,.fs:focus{outline:none;border-color:var(--blue)}
-.ft{min-height:80px;resize:none}
-.fs{cursor:pointer}
+.ft{min-height:80px;resize:none}.fs{cursor:pointer}
 .fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .upload-zone{border:2px dashed var(--border);border-radius:var(--r);padding:24px 16px;text-align:center;cursor:pointer;background:var(--paper2);position:relative;transition:all .2s}
 .upload-zone.drag-over{border-color:var(--blue);background:var(--blue-light)}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
-.upload-icon{font-size:32px;margin-bottom:6px}
-.upload-main{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:3px}
-.upload-sub{font-size:11px;color:var(--hint)}
+.upload-icon{font-size:32px;margin-bottom:6px}.upload-main{font-size:14px;font-weight:700;color:var(--muted);margin-bottom:3px}.upload-sub{font-size:11px;color:var(--hint)}
 .upload-preview-img{max-width:100%;max-height:180px;border-radius:10px;margin-top:12px;object-fit:contain;border:1px solid var(--border)}
 .upload-fname{font-size:12px;color:var(--green);font-weight:700;margin-top:8px}
 .upload-err{font-size:12px;color:var(--red);margin-top:8px;font-weight:500}
@@ -99,9 +87,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .ri-head{padding:12px 14px;background:var(--paper2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px}
 .ri-body{padding:14px}
 .review-img{width:100%;max-height:260px;object-fit:contain;border-radius:10px;border:1px solid var(--border);margin-bottom:12px;cursor:pointer;display:block}
-.review-meta{display:flex;gap:20px;margin-bottom:10px;flex-wrap:wrap}
-.rm-label{font-size:11px;color:var(--muted);font-family:'Space Mono',monospace}
-.rm-val{font-size:14px;font-weight:700}
 .sch-card{background:white;border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
 .sch-head{padding:10px 14px;background:var(--paper2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .sch-body{padding:12px 14px}
@@ -109,26 +94,24 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .dl-row:last-child{border-bottom:none}
 .dl-lbl{font-size:13px;font-weight:500}
 .dl-val{font-size:13px;font-family:'Space Mono',monospace;color:var(--muted)}
-.dl-val.overdue{color:var(--red);font-weight:700}
-.dl-val.soon{color:var(--amber);font-weight:700}
-.dl-val.ok{color:var(--green)}
-
-/* ── 設定頁面專用樣式 ── */
+.dl-val.overdue{color:var(--red);font-weight:700}.dl-val.soon{color:var(--amber);font-weight:700}.dl-val.ok{color:var(--green)}
+/* 設定頁面 */
 .cfg-block{background:white;border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
-.cfg-row{padding:14px 16px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;gap:12px}
+.cfg-row{padding:12px 16px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;gap:12px}
 .cfg-row:last-child{border-bottom:none}
-.cfg-row-label{font-size:14px;font-weight:500;flex-shrink:0;min-width:80px}
+.cfg-row-label{font-size:14px;font-weight:500;flex-shrink:0}
 .cfg-row-sub{font-size:12px;color:var(--muted);margin-top:1px}
-.cfg-input{flex:1;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--ink);-webkit-appearance:none;min-width:0}
+.cfg-input{flex:1;padding:8px 10px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--ink);-webkit-appearance:none;min-width:0}
 .cfg-input:focus{outline:none;border-color:var(--blue)}
 .cfg-tag{font-size:11px;background:var(--paper2);color:var(--muted);padding:4px 10px;border-radius:12px;font-family:'Space Mono',monospace;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .cfg-tag.set{background:var(--green-light);color:var(--green)}
-.mem-edit-row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
-.mem-edit-row:last-child{margin-bottom:0}
+/* 組員編輯 */
+.mem-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.mem-row:last-child{margin-bottom:0}
 .mem-num{width:20px;font-size:12px;color:var(--hint);font-family:'Space Mono',monospace;text-align:center;flex-shrink:0}
 .mem-input{flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--rs);font-size:14px;font-family:inherit;background:white;color:var(--ink);-webkit-appearance:none}
 .mem-input:focus{outline:none;border-color:var(--blue)}
-
+.mem-del{width:32px;height:32px;border-radius:50%;background:var(--red-light);color:var(--red);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sync-bar{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-bottom:14px;padding:8px 10px;background:var(--paper2);border-radius:var(--rs)}
 .tabs{display:flex;background:var(--paper2);border-radius:var(--rs);padding:3px;margin-bottom:14px}
 .tab-btn{flex:1;padding:8px;font-size:13px;font-weight:700;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(--muted);font-family:inherit;transition:all .15s}
@@ -144,10 +127,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .empty h3{font-size:16px;font-weight:700;margin-bottom:6px}
 .empty p{font-size:13px;color:var(--muted)}
 .divider{height:1px;background:var(--border);margin:12px 0}
+.info-box{background:var(--blue-light);border:1px solid #b5d4f4;border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--blue);margin-bottom:14px}
 @media(min-width:640px){
-  .bottom-nav{display:none}
-  .scroll-area{padding-bottom:32px}
-  .app{flex-direction:row}
+  .bottom-nav{display:none}.scroll-area{padding-bottom:32px}.app{flex-direction:row}
   .ds{display:flex;flex-direction:column;width:220px;flex-shrink:0;background:var(--ink);color:var(--paper);min-height:100dvh;position:sticky;top:0;height:100dvh;overflow-y:auto}
   .topbar{display:none}
   .ds-logo{padding:24px 20px 20px;border-bottom:1px solid #222}
@@ -175,6 +157,7 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
     <div class="ds-sec">主要功能</div>
     <div class="ds-ni active" onclick="go('dashboard')">📊 總覽</div>
     <div class="ds-ni" onclick="go('assign')">📋 分派任務</div>
+    <div class="ds-ni" onclick="go('submit')">📤 提交海報</div>
     <div class="ds-ni" onclick="go('review')">✅ 審核海報</div>
     <div class="ds-ni" onclick="go('schedule')">📅 製作期程</div>
     <div class="ds-sec">管理</div>
@@ -206,16 +189,16 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
     </div>
     <div class="workload-card">
       <div class="workload-title">組員待處理海報數</div>
-      <div id="workload-list"></div>
+      <div id="workload-list"><div style="font-size:13px;color:var(--hint)">載入中...</div></div>
     </div>
     <div class="sh">所有海報</div>
     <div id="poster-list"></div>
   </div>
 
-  <!-- 分派任務 -->
+  <!-- 分派任務（組長用） -->
   <div class="page" id="page-assign">
     <div class="sh" style="margin-top:0">分派任務</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">由組長填寫海報資料，選擇負責組員</p>
+    <div class="info-box">📋 組長專用：建立海報任務並分派給組員</div>
     <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="asgn-name" placeholder="例：環境議題海報"></div>
     <div class="fg"><label class="fl">指派給 *</label><select class="fs" id="asgn-assignee"><option value="">— 選擇負責組員 —</option></select></div>
     <div class="fr">
@@ -226,11 +209,8 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
       <label class="fl">海報圖片 <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB（選填）</span></label>
       <div class="upload-zone" id="asgn-zone" ondragover="onDragOver(event,'asgn')" ondragleave="onDragLeave(event,'asgn')" ondrop="onDrop(event,'asgn')">
         <input type="file" accept=".jpg,.jpeg" id="asgn-file" onchange="onFileChange(event,'asgn')">
-        <div class="upload-icon">🖼️</div>
-        <div class="upload-main">點擊選擇或拖曳圖片</div>
-        <div class="upload-sub">僅限 JPG・1MB 以下</div>
-        <div id="asgn-preview"></div>
-        <div id="asgn-err" class="upload-err" style="display:none"></div>
+        <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
+        <div id="asgn-preview"></div><div id="asgn-err" class="upload-err" style="display:none"></div>
       </div>
     </div>
     <div class="fg"><label class="fl">備註說明</label><textarea class="ft" id="asgn-note" placeholder="說明設計方向、注意事項..."></textarea></div>
@@ -239,6 +219,40 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
       <button class="btn btn-ghost" onclick="clearAssign()">清除</button>
     </div>
     <div id="asgn-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 處理中...</div>
+  </div>
+
+  <!-- 提交海報（組員用） -->
+  <div class="page" id="page-submit">
+    <div class="sh" style="margin-top:0">提交海報</div>
+    <div class="info-box">📤 組員專用：更新製作進度或提交海報待審核</div>
+    <div class="fg">
+      <label class="fl">選擇你負責的海報 *</label>
+      <select class="fs" id="sub-poster" onchange="onSubPosterChange()"><option value="">— 選擇海報 —</option></select>
+    </div>
+    <div id="sub-current-info" style="display:none;background:var(--paper2);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted)"></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">更新進度 %</label><input type="number" class="fi" id="sub-progress" min="0" max="100" value="100"></div>
+      <div class="fg"><label class="fl">更新狀態</label>
+        <select class="fs" id="sub-status">
+          <option value="draft">製作中</option>
+          <option value="submitted">提交待審核</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg">
+      <label class="fl">更新圖片 <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB（選填）</span></label>
+      <div class="upload-zone" id="sub-zone" ondragover="onDragOver(event,'sub')" ondragleave="onDragLeave(event,'sub')" ondrop="onDrop(event,'sub')">
+        <input type="file" accept=".jpg,.jpeg" id="sub-file" onchange="onFileChange(event,'sub')">
+        <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
+        <div id="sub-preview"></div><div id="sub-err" class="upload-err" style="display:none"></div>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">備註說明</label><textarea class="ft" id="sub-note" placeholder="說明製作狀況、修改內容..."></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="submitUpdate()">更新送出</button>
+      <button class="btn btn-ghost" onclick="clearSubmit()">清除</button>
+    </div>
+    <div id="sub-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 上傳中...</div>
   </div>
 
   <!-- 審核 -->
@@ -258,10 +272,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
     <button class="btn btn-primary btn-full" style="margin-top:8px" onclick="openScheduleAdd()">＋ 新增期程</button>
   </div>
 
-  <!-- 設定 ── 欄位全部靜態 HTML，不動態渲染，避免閃退 -->
+  <!-- 設定 -->
   <div class="page" id="page-settings">
     <div class="sh" style="margin-top:0">系統設定</div>
-
     <div class="cfg-block">
       <div class="cfg-row">
         <div style="flex-shrink:0"><div class="cfg-row-label">活動名稱</div></div>
@@ -273,17 +286,13 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
       </div>
     </div>
 
-    <div class="sh">組員名單（共 6 位）</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="sh" style="margin:0">組員名單</div>
+      <button class="btn btn-ghost btn-sm" onclick="addMemberRow()">＋ 新增組員</button>
+    </div>
     <div class="cfg-block" style="padding:14px 16px">
-      <div class="mem-edit-row"><span class="mem-num">1</span><input type="text" class="mem-input" id="mem-0" placeholder="組員一"></div>
-      <div class="mem-edit-row"><span class="mem-num">2</span><input type="text" class="mem-input" id="mem-1" placeholder="組員二"></div>
-      <div class="mem-edit-row"><span class="mem-num">3</span><input type="text" class="mem-input" id="mem-2" placeholder="組員三"></div>
-      <div class="mem-edit-row"><span class="mem-num">4</span><input type="text" class="mem-input" id="mem-3" placeholder="組員四"></div>
-      <div class="mem-edit-row"><span class="mem-num">5</span><input type="text" class="mem-input" id="mem-4" placeholder="組員五"></div>
-      <div class="mem-edit-row"><span class="mem-num">6</span><input type="text" class="mem-input" id="mem-5" placeholder="組員六"></div>
-      <div style="margin-top:10px">
-        <button class="btn btn-ghost btn-full btn-sm" onclick="saveMemberList()">儲存組員名單</button>
-      </div>
+      <div id="member-editor"></div>
+      <button class="btn btn-ghost btn-full btn-sm" onclick="saveMemberList()" style="margin-top:10px">儲存組員名單</button>
     </div>
 
     <div class="cfg-block">
@@ -319,11 +328,11 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
   <button class="nav-tab" id="nav-assign" onclick="go('assign')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>分派
   </button>
+  <button class="nav-tab" id="nav-submit" onclick="go('submit')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>提交
+  </button>
   <button class="nav-tab" id="nav-review" onclick="go('review')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>審核
-  </button>
-  <button class="nav-tab" id="nav-schedule" onclick="go('schedule')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>期程
   </button>
   <button class="nav-tab" id="nav-settings" onclick="go('settings')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>設定
@@ -363,28 +372,26 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 <div class="toast" id="toast"></div>
 
 <script>
-// ══ 設定 ════════════════════════════════════════
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby8-6lBZKSJ6yUhJgp0JssfN8s31rsxr-8G3VKSFD3r_7L_5V9lrvuA6oiWIgPgFL1S/exec';
-var DEFAULT_MEMBERS = ['組員一','組員二','組員三','組員四','組員五','組員六'];
+// ══ 設定 ════════════════════════════
+var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzffWsHWvwK6LxcuaGO1NtLpU09YxwNvWpKgkT-lmtxgzxZAyt9LXuLWHDTXGAI4V28/exec';
 
-// ══ 狀態 ════════════════════════════════════════
-var db = { posters:[], schedules:[], settings:{ event:'', reviewer:'審核委員' }, members:DEFAULT_MEMBERS.slice() };
+// ══ 狀態 ════════════════════════════
+var db = { posters:[], schedules:[], settings:{ event:'', reviewer:'審核委員' }, members:['組員一','組員二','組員三','組員四','組員五','組員六'] };
 var chatUrl = '';
 var reviewFilter = 'submitted';
 var pendingImgs = {};
 var currentPage = 'dashboard';
-var autoSyncTimer = null;
-var isOnSettingsPage = false; // 在設定頁面時暫停自動同步渲染
 
-// ══ 本機快取 ════════════════════════════════════
+// ══ 本機快取 ════════════════════════
 function loadLocal() {
   try {
     var d = localStorage.getItem('prs-db');
     if (d) {
       var p = JSON.parse(d);
-      db = p;
-      if (!db.members || !db.members.length) db.members = DEFAULT_MEMBERS.slice();
-      if (!db.settings) db.settings = { event:'', reviewer:'審核委員' };
+      if (p.posters !== undefined) db.posters = p.posters;
+      if (p.schedules !== undefined) db.schedules = p.schedules;
+      if (p.settings) db.settings = p.settings;
+      if (p.members && p.members.length) db.members = p.members;
     }
   } catch(e) {}
   try { var c = localStorage.getItem('prs-chat'); if (c) chatUrl = c; } catch(e) {}
@@ -394,14 +401,20 @@ function saveLocal() {
   try { localStorage.setItem('prs-chat', chatUrl); } catch(e) {}
 }
 
-// ══ Google Sheets 同步 ══════════════════════════
+// ══ 雲端同步（修正版，處理 Apps Script redirect）════
 async function gsLoad() {
   setSyncState('syncing');
   try {
-    var res = await fetch(SCRIPT_URL + '?action=load&t=' + Date.now());
-    if (!res.ok) throw new Error('HTTP ' + res.status);
+    // Apps Script 會 redirect，需要 follow redirects
+    var res = await fetch(SCRIPT_URL + '?action=load&t=' + Date.now(), {
+      redirect: 'follow'
+    });
     var text = await res.text();
-    var data = JSON.parse(text);
+    // 找到 JSON 部分（Apps Script 有時會包含額外字元）
+    var jsonStart = text.indexOf('{');
+    var jsonEnd = text.lastIndexOf('}');
+    if (jsonStart === -1) throw new Error('回應格式錯誤');
+    var data = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
     if (data.error) throw new Error(data.error);
     if (data.posters !== undefined) {
       db.posters = data.posters || [];
@@ -418,7 +431,8 @@ async function gsLoad() {
     return true;
   } catch(e) {
     setSyncState('error');
-    updateSyncLabel('同步失敗（' + e.message + '）');
+    updateSyncLabel('同步失敗：' + e.message);
+    console.error('gsLoad error:', e);
     return false;
   }
 }
@@ -427,24 +441,27 @@ async function gsSave() {
   saveLocal();
   setSyncState('syncing');
   try {
+    var payload = JSON.stringify({ action: 'save', data: db });
     var res = await fetch(SCRIPT_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'save', data: db })
+      redirect: 'follow',
+      headers: { 'Content-Type': 'text/plain' }, // 用 text/plain 避免 preflight CORS
+      body: payload
     });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
     var text = await res.text();
-    var data = JSON.parse(text);
+    var jsonStart = text.indexOf('{');
+    var jsonEnd = text.lastIndexOf('}');
+    if (jsonStart === -1) throw new Error('回應格式錯誤');
+    var data = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
     if (data.error) throw new Error(data.error);
-    saveLocal();
     setSyncState('ok');
     updateSyncLabel('已同步 ' + new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}));
     try { new BroadcastChannel('prs').postMessage({ type:'update', db:db }); } catch(e) {}
     return true;
   } catch(e) {
-    saveLocal();
     setSyncState('error');
     updateSyncLabel('儲存失敗：' + e.message);
+    console.error('gsSave error:', e);
     return false;
   }
 }
@@ -452,30 +469,28 @@ async function gsSave() {
 async function forceSync() {
   toast('同步中...');
   var ok = await gsLoad();
-  // 在設定頁面時只更新活動名稱和審核委員，不渲染組員欄位
-  if (currentPage === 'settings') {
-    updateSettingsFields();
-  } else {
-    renderPage();
-  }
-  toast(ok ? '同步完成 ✓' : '無法連線，顯示本機資料');
+  if (currentPage !== 'settings') renderPage();
+  else syncSettingsDisplay();
+  toast(ok ? '同步完成 ✓' : '無法連線，請確認網路');
 }
 
-// 跨分頁同步
 try {
   new BroadcastChannel('prs').onmessage = function(e) {
     if (e.data && e.data.type === 'update' && e.data.db) {
-      db = e.data.db;
+      db.posters = e.data.db.posters || db.posters;
+      db.schedules = e.data.db.schedules || db.schedules;
+      db.settings = e.data.db.settings || db.settings;
+      db.members = e.data.db.members || db.members;
       if (currentPage !== 'settings') renderPage();
       toast('收到最新資料 ↻');
     }
   };
 } catch(e) {}
 
-// 自動同步（設定頁面時不觸發渲染）
 setInterval(function() {
   gsLoad().then(function() {
     if (currentPage !== 'settings') renderPage();
+    else syncSettingsDisplay();
   });
 }, 30000);
 
@@ -484,308 +499,398 @@ async function chatNotify(text) {
   try { await fetch(chatUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:text}) }); } catch(e) {}
 }
 
-// ══ Sync UI ══════════════════════════════════════
 function setSyncState(s) {
   ['sync-dot','sync-dot2'].forEach(function(id) {
-    var el = document.getElementById(id); if (!el) return;
-    el.className = 'sync-dot' + (s==='syncing'?' syncing':s==='error'?' error':'');
+    var el=document.getElementById(id); if(!el) return;
+    el.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':'');
   });
 }
-function updateSyncLabel(t) { var el = document.getElementById('sync-label'); if (el) el.textContent = t; }
+function updateSyncLabel(t) { var el=document.getElementById('sync-label'); if(el) el.textContent=t; }
 
-// ══ 導航 ════════════════════════════════════════
+// ══ 導航 ════════════════════════════
 function go(name) {
   document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
-  document.getElementById('page-' + name).classList.add('active');
-  document.querySelectorAll('.nav-tab').forEach(function(t){ t.classList.remove('active'); });
-  var nb = document.getElementById('nav-' + name); if (nb) nb.classList.add('active');
-  document.querySelectorAll('.ds-ni').forEach(function(n){ n.classList.remove('active'); });
-  document.querySelectorAll('.ds-ni').forEach(function(n) {
-    if (n.getAttribute('onclick') && n.getAttribute('onclick').indexOf("'"+name+"'") !== -1) n.classList.add('active');
-  });
-  currentPage = name;
-  document.getElementById('scroll-area').scrollTo(0, 0);
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-tab,.ds-ni').forEach(function(t){ t.classList.remove('active'); });
+  var nb=document.getElementById('nav-'+name); if(nb) nb.classList.add('active');
+  document.querySelectorAll('.ds-ni').forEach(function(n){ if(n.getAttribute('onclick')&&n.getAttribute('onclick').indexOf("'"+name+"'")!==-1) n.classList.add('active'); });
+  currentPage=name;
+  document.getElementById('scroll-area').scrollTo(0,0);
   renderPage();
 }
 
 function renderPage() {
-  if (currentPage === 'dashboard') renderDashboard();
-  if (currentPage === 'assign') fillMemberSelects();
-  if (currentPage === 'review') renderReview();
-  if (currentPage === 'schedule') renderSchedule();
-  if (currentPage === 'settings') updateSettingsFields(); // 只更新值，不重建 DOM
+  if(currentPage==='dashboard') renderDashboard();
+  else if(currentPage==='assign') { fillSelect('asgn-assignee','— 選擇負責組員 —'); }
+  else if(currentPage==='submit') renderSubmitPage();
+  else if(currentPage==='review') renderReview();
+  else if(currentPage==='schedule') renderSchedule();
+  else if(currentPage==='settings') {
+    syncSettingsDisplay();
+    renderMemberEditor();
+  }
 }
 
-// ══ 設定頁面 — 只更新值，絕不重建 DOM ══════════
-function updateSettingsFields() {
-  // 只有在欄位沒有 focus 的時候才更新，避免干擾輸入
+// ══ 設定頁面 ═══════════════════════
+// 只同步不重建 DOM 的欄位
+function syncSettingsDisplay() {
   var cfgEvent = document.getElementById('cfg-event');
   var cfgReviewer = document.getElementById('cfg-reviewer');
   if (cfgEvent && document.activeElement !== cfgEvent) cfgEvent.value = db.settings.event || '';
   if (cfgReviewer && document.activeElement !== cfgReviewer) cfgReviewer.value = db.settings.reviewer || '';
-  // 組員欄位：只在沒有任何組員欄位被 focus 時更新
-  var anyMemFocused = false;
-  for (var i = 0; i < 6; i++) { var m = document.getElementById('mem-' + i); if (m && document.activeElement === m) { anyMemFocused = true; break; } }
-  if (!anyMemFocused) {
-    var members = db.members && db.members.length ? db.members : DEFAULT_MEMBERS;
-    for (var j = 0; j < 6; j++) {
-      var el = document.getElementById('mem-' + j);
-      if (el) el.value = members[j] || '';
-    }
-  }
-  // Chat tag
-  var tc = document.getElementById('tag-chat');
-  if (tc) { tc.textContent = chatUrl ? '已設定 ✓' : '未設定'; tc.className = 'cfg-tag' + (chatUrl ? ' set' : ''); }
-  // 更新活動名稱顯示
   document.getElementById('tb-event').textContent = db.settings.event || '海報審核';
   document.getElementById('ds-event').textContent = db.settings.event || '活動名稱未設定';
+  var tc=document.getElementById('tag-chat');
+  if(tc){ tc.textContent=chatUrl?'已設定 ✓':'未設定'; tc.className='cfg-tag'+(chatUrl?' set':''); }
 }
 
-// ══ 下拉選單 ══════════════════════════════════════
+// 渲染組員編輯器（只在首次進入設定頁時呼叫）
+var memberEditorBuilt = false;
+function renderMemberEditor() {
+  // 只在沒有組員欄位被 focus 時才重建
+  var anyFocused = false;
+  document.querySelectorAll('.mem-input').forEach(function(el){ if(document.activeElement===el) anyFocused=true; });
+  if(anyFocused) return;
+  var el = document.getElementById('member-editor');
+  if (!el) return;
+  el.innerHTML = db.members.map(function(m, i) {
+    return '<div class="mem-row" id="memrow-'+i+'">' +
+      '<span class="mem-num">'+(i+1)+'</span>' +
+      '<input type="text" class="mem-input" id="mem-'+i+'" value="'+escH(m)+'" placeholder="組員名稱">' +
+      '<button class="mem-del" onclick="deleteMemberRow('+i+')" title="刪除">×</button>' +
+      '</div>';
+  }).join('');
+}
+
+function addMemberRow() {
+  db.members.push('');
+  renderMemberEditor();
+  // focus 最後一個
+  var last = document.getElementById('mem-'+(db.members.length-1));
+  if(last) last.focus();
+}
+
+function deleteMemberRow(i) {
+  if(db.members.length <= 1){ toast('至少需要保留 1 位組員'); return; }
+  db.members.splice(i, 1);
+  renderMemberEditor();
+}
+
+async function saveMemberList() {
+  var list = [];
+  document.querySelectorAll('.mem-input').forEach(function(el){ var v=el.value.trim(); if(v) list.push(v); });
+  if(!list.length){ toast('請至少填寫一位組員名稱'); return; }
+  db.members = list;
+  var ok = await gsSave();
+  renderMemberEditor();
+  fillSelect('asgn-assignee','— 選擇負責組員 —');
+  toast(ok ? '組員名單已儲存並同步 ✓' : '已儲存本機，雲端同步失敗');
+}
+
+// ══ 下拉選單 ════════════════════════
 function fillSelect(id, emptyLabel) {
-  var sel = document.getElementById(id); if (!sel) return;
-  var cur = sel.value; sel.innerHTML = '';
-  if (emptyLabel) { var o = document.createElement('option'); o.value = ''; o.textContent = emptyLabel; sel.appendChild(o); }
-  (db.members || []).forEach(function(m) { var o = document.createElement('option'); o.value = m; o.textContent = m; sel.appendChild(o); });
-  if (cur) sel.value = cur;
+  var sel=document.getElementById(id); if(!sel) return;
+  var cur=sel.value; sel.innerHTML='';
+  if(emptyLabel){ var o=document.createElement('option'); o.value=''; o.textContent=emptyLabel; sel.appendChild(o); }
+  (db.members||[]).forEach(function(m){ var o=document.createElement('option'); o.value=m; o.textContent=m; sel.appendChild(o); });
+  if(cur) sel.value=cur;
 }
-function fillMemberSelects() { fillSelect('asgn-assignee', '— 選擇負責組員 —'); }
 
-// ══ 上傳 ══════════════════════════════════════════
+// ══ 上傳 ════════════════════════════
 function onDragOver(e,p){ e.preventDefault(); document.getElementById(p+'-zone').classList.add('drag-over'); }
 function onDragLeave(e,p){ document.getElementById(p+'-zone').classList.remove('drag-over'); }
 function onDrop(e,p){ e.preventDefault(); document.getElementById(p+'-zone').classList.remove('drag-over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0],p); }
 function onFileChange(e,p){ if(e.target.files[0]) handleFile(e.target.files[0],p); }
-function handleFile(file, p) {
+function handleFile(file,p) {
   var errEl=document.getElementById(p+'-err'), preEl=document.getElementById(p+'-preview');
   errEl.style.display='none'; preEl.innerHTML=''; delete pendingImgs[p];
   var n=file.name.toLowerCase();
   if(file.type!=='image/jpeg'&&!n.endsWith('.jpg')&&!n.endsWith('.jpeg')){ errEl.textContent='❌ 只接受 JPG 格式'; errEl.style.display='block'; return; }
-  if(file.size>1048576){ errEl.textContent='❌ 檔案 '+(file.size/1048576).toFixed(2)+'MB，超過 1MB 限制'; errEl.style.display='block'; return; }
+  if(file.size>1048576){ errEl.textContent='❌ 檔案 '+(file.size/1048576).toFixed(2)+'MB，超過 1MB'; errEl.style.display='block'; return; }
   var r=new FileReader();
   r.onload=function(ev){ pendingImgs[p]=ev.target.result; preEl.innerHTML='<img class="upload-preview-img" src="'+pendingImgs[p]+'"><div class="upload-fname">✓ '+escH(file.name)+' （'+(file.size/1024).toFixed(0)+' KB）</div><button class="upload-rm" onclick="removeImg(\''+p+'\')">移除</button>'; };
   r.readAsDataURL(file);
 }
 function removeImg(p){ delete pendingImgs[p]; document.getElementById(p+'-preview').innerHTML=''; document.getElementById(p+'-err').style.display='none'; document.getElementById(p+'-file').value=''; }
 
-// ══ 總覽 ══════════════════════════════════════════
-var AVATAR_COLORS = ['#1A4FD6','#1E6E3A','#8B5E00','#B0231A','#6B35B5','#1A7F8B'];
+// ══ 總覽 ════════════════════════════
+var COLORS=['#1A4FD6','#1E6E3A','#8B5E00','#B0231A','#6B35B5','#1A7F8B','#C45200','#0D6E8B'];
 function renderDashboard() {
-  document.getElementById('tb-event').textContent = db.settings.event || '海報審核';
-  document.getElementById('ds-event').textContent = db.settings.event || '活動名稱未設定';
-  document.getElementById('s-total').textContent = db.posters.length;
-  document.getElementById('s-approved').textContent = db.posters.filter(function(p){return p.status==='approved';}).length;
-  document.getElementById('s-pending').textContent = db.posters.filter(function(p){return p.status==='submitted';}).length;
-  document.getElementById('s-rejected').textContent = db.posters.filter(function(p){return p.status==='rejected';}).length;
-  var members = db.members && db.members.length ? db.members : DEFAULT_MEMBERS;
-  var counts = {};
-  members.forEach(function(m){ counts[m] = 0; });
-  db.posters.forEach(function(p){
-    if (p.status === 'approved') return;
-    if (p.assignee && counts[p.assignee] !== undefined) counts[p.assignee]++;
-  });
-  var max = Math.max(1, Math.max.apply(null, members.map(function(m){ return counts[m]; })));
-  document.getElementById('workload-list').innerHTML = members.map(function(m, i) {
-    var c = counts[m] || 0;
-    var pct = Math.round((c / max) * 100);
-    var barCls = c >= 3 ? 'full' : c >= 2 ? 'busy' : '';
-    var col = AVATAR_COLORS[i % AVATAR_COLORS.length];
-    return '<div class="member-row">' +
-      '<div class="member-avatar" style="background:'+col+'22;color:'+col+'">'+escH(m.slice(0,1))+'</div>' +
-      '<div class="member-name">'+escH(m)+'</div>' +
-      '<div class="member-bar-wrap"><div class="member-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>' +
-      '<div class="member-count'+(c>0?' has-work':'')+'">'+c+'</div></div>';
+  document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
+  document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
+  document.getElementById('s-total').textContent=db.posters.length;
+  document.getElementById('s-approved').textContent=db.posters.filter(function(p){return p.status==='approved';}).length;
+  document.getElementById('s-pending').textContent=db.posters.filter(function(p){return p.status==='submitted';}).length;
+  document.getElementById('s-rejected').textContent=db.posters.filter(function(p){return p.status==='rejected';}).length;
+  var members=db.members&&db.members.length?db.members:['（無組員）'];
+  var counts={};
+  members.forEach(function(m){ counts[m]=0; });
+  db.posters.forEach(function(p){ if(p.status==='approved') return; if(p.assignee&&counts[p.assignee]!==undefined) counts[p.assignee]++; });
+  var max=Math.max(1,Math.max.apply(null,members.map(function(m){return counts[m];})));
+  document.getElementById('workload-list').innerHTML=members.map(function(m,i){
+    var c=counts[m]||0, pct=Math.round((c/max)*100);
+    var barCls=c>=3?'full':c>=2?'busy':'';
+    var col=COLORS[i%COLORS.length];
+    return '<div class="wl-row"><div class="wl-avatar" style="background:'+col+'22;color:'+col+'">'+escH(m.slice(0,1))+'</div>'+
+      '<div class="wl-name">'+escH(m)+'</div>'+
+      '<div class="wl-bar-wrap"><div class="wl-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>'+
+      '<div class="wl-count'+(c>0?' has-work':'')+'">'+c+'</div></div>';
   }).join('');
-  var el = document.getElementById('poster-list');
-  if (!db.posters.length) { el.innerHTML='<div class="empty"><div class="empty-emoji">📋</div><h3>尚無海報</h3><p>前往「分派」頁面建立第一份海報</p></div>'; return; }
-  el.innerHTML = db.posters.map(posterCard).join('');
+  var el=document.getElementById('poster-list');
+  if(!db.posters.length){ el.innerHTML='<div class="empty"><div class="empty-emoji">📋</div><h3>尚無海報</h3><p>前往「分派」頁面建立第一份海報</p></div>'; return; }
+  el.innerHTML=db.posters.map(posterCard).join('');
 }
 
 function slabel(s){ return {draft:'製作中',submitted:'待審核',approved:'已通過',rejected:'需修改'}[s]||s; }
 function pcol(prog,status){ if(status==='approved') return 'pf-green'; if(status==='rejected') return 'pf-red'; return prog>=100?'pf-blue':'pf-amber'; }
 function posterCard(p) {
-  var thumb = p.image ? '<img class="pc-thumb" src="'+p.image+'" alt="" onclick="openLB('+p.id+')">' : '<div class="pc-thumb-ph">🖼</div>';
-  var rn = (p.status==='rejected'&&p.reviewNote) ? '<div class="reject-note">💬 '+escH(p.reviewNote)+'</div>' : '';
-  var assignee = p.assignee ? '<div class="pc-assignee">👤 '+escH(p.assignee)+'</div>' : '';
-  return '<div class="poster-card"><div class="pc-inner">' +
-    '<div class="pc-row">'+thumb+'<div class="pc-info"><div class="pc-name">'+escH(p.name)+'</div>'+assignee+'<div class="pc-meta">'+(p.reviewedBy?'審核：'+p.reviewedBy:'')+'</div></div>' +
-    '<div class="pc-right"><span class="badge b-'+p.status+'">'+slabel(p.status)+'</span>' +
-    '<button class="btn btn-ghost btn-icon btn-sm" onclick="deletePoster('+p.id+')" style="font-size:13px;color:var(--muted)">✕</button></div></div>' +
-    '<div class="prog-bar"><div class="prog-fill '+pcol(p.progress,p.status)+'" style="width:'+p.progress+'%"></div></div>' +
+  var thumb=p.image?'<img class="pc-thumb" src="'+p.image+'" alt="" onclick="openLB('+p.id+')">'
+    :'<div class="pc-thumb-ph">🖼</div>';
+  var rn=(p.status==='rejected'&&p.reviewNote)?'<div class="reject-note">💬 '+escH(p.reviewNote)+'</div>':'';
+  var assignee=p.assignee?'<div class="pc-assignee">👤 '+escH(p.assignee)+'</div>':'';
+  return '<div class="poster-card"><div class="pc-inner">'+
+    '<div class="pc-row">'+thumb+'<div class="pc-info"><div class="pc-name">'+escH(p.name)+'</div>'+assignee+
+    '<div class="pc-sub">'+(p.reviewedBy?'審核：'+p.reviewedBy:'')+'</div></div>'+
+    '<div class="pc-right"><span class="badge b-'+p.status+'">'+slabel(p.status)+'</span>'+
+    '<button class="btn btn-ghost btn-icon btn-sm" onclick="deletePoster('+p.id+')" style="font-size:13px;color:var(--muted)">✕</button></div></div>'+
+    '<div class="prog-bar"><div class="prog-fill '+pcol(p.progress,p.status)+'" style="width:'+p.progress+'%"></div></div>'+
     '<div class="prog-label">'+p.progress+'%'+(p.note?' · '+escH(p.note.slice(0,30)):'')+'</div>'+rn+'</div></div>';
 }
 async function deletePoster(id) {
-  if (!confirm('確定刪除？')) return;
-  db.posters = db.posters.filter(function(p){ return p.id!==id; });
+  if(!confirm('確定刪除？')) return;
+  db.posters=db.posters.filter(function(p){return p.id!==id;});
   await gsSave(); renderDashboard(); toast('已刪除');
 }
 
-// ══ 分派任務 ══════════════════════════════════════
+// ══ 分派任務 ════════════════════════
 async function assignPoster() {
-  var name = document.getElementById('asgn-name').value.trim();
-  var assignee = document.getElementById('asgn-assignee').value;
-  if (!name) { toast('請填寫海報名稱'); return; }
-  if (!assignee) { toast('請選擇負責組員'); return; }
-  var poster = {
-    id: Date.now(), name: name, assignee: assignee, group: '',
-    progress: Math.min(100, Math.max(0, parseInt(document.getElementById('asgn-progress').value)||0)),
-    note: document.getElementById('asgn-note').value.trim(),
-    members: [assignee],
-    status: document.getElementById('asgn-status').value || 'draft',
-    reviewNote: '', reviewedBy: '', reviewedAt: '',
-    image: pendingImgs['asgn'] || null
-  };
-  document.getElementById('asgn-loading').style.display = 'block';
+  var name=document.getElementById('asgn-name').value.trim();
+  var assignee=document.getElementById('asgn-assignee').value;
+  if(!name){toast('請填寫海報名稱');return;}
+  if(!assignee){toast('請選擇負責組員');return;}
+  var poster={id:Date.now(),name:name,assignee:assignee,group:'',
+    progress:Math.min(100,Math.max(0,parseInt(document.getElementById('asgn-progress').value)||0)),
+    note:document.getElementById('asgn-note').value.trim(),
+    members:[assignee],status:document.getElementById('asgn-status').value||'draft',
+    reviewNote:'',reviewedBy:'',reviewedAt:'',image:pendingImgs['asgn']||null};
+  document.getElementById('asgn-loading').style.display='block';
   db.posters.push(poster);
-  var ok = await gsSave();
-  document.getElementById('asgn-loading').style.display = 'none';
-  if (ok) {
+  var ok=await gsSave();
+  document.getElementById('asgn-loading').style.display='none';
+  if(ok){
     await chatNotify('📋 *新任務分派*\n\n海報名稱：'+name+'\n負責組員：'+assignee+'\n狀態：'+slabel(poster.status));
     clearAssign(); toast('任務已建立並分派給 '+assignee); go('dashboard');
-  }
+  } else toast('建立成功（本機），雲端同步失敗');
 }
-function clearAssign() {
-  ['asgn-name','asgn-note'].forEach(function(id){ document.getElementById(id).value=''; });
-  document.getElementById('asgn-progress').value = 0;
-  document.getElementById('asgn-assignee').value = '';
-  document.getElementById('asgn-status').value = 'draft';
+function clearAssign(){
+  ['asgn-name','asgn-note'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('asgn-progress').value=0;
+  document.getElementById('asgn-assignee').value='';
+  document.getElementById('asgn-status').value='draft';
   removeImg('asgn');
 }
 
-// ══ 審核 ══════════════════════════════════════════
+// ══ 提交海報（組員） ════════════════
+function renderSubmitPage() {
+  var sel=document.getElementById('sub-poster'); if(!sel) return;
+  var cur=sel.value; sel.innerHTML='<option value="">— 選擇海報 —</option>';
+  db.posters.filter(function(p){return p.status!=='approved';}).forEach(function(p){
+    var o=document.createElement('option');
+    o.value=p.id;
+    o.textContent=(p.assignee?'['+p.assignee+'] ':'')+p.name;
+    sel.appendChild(o);
+  });
+  if(cur) sel.value=cur;
+  onSubPosterChange();
+}
+function onSubPosterChange() {
+  var sel=document.getElementById('sub-poster');
+  var info=document.getElementById('sub-current-info');
+  if(!sel||!info) return;
+  var id=parseInt(sel.value);
+  var p=db.posters.find(function(x){return x.id===id;});
+  if(p){
+    info.style.display='block';
+    info.innerHTML='目前狀態：<b>'+slabel(p.status)+'</b>　製作進度：<b>'+p.progress+'%</b>'+(p.reviewNote?'<br>上次意見：'+escH(p.reviewNote):'');
+    document.getElementById('sub-progress').value=p.progress;
+    document.getElementById('sub-status').value=p.status==='approved'?'submitted':p.status;
+    if(p.note) document.getElementById('sub-note').value=p.note;
+  } else {
+    info.style.display='none';
+  }
+}
+async function submitUpdate() {
+  var selEl=document.getElementById('sub-poster');
+  var id=parseInt(selEl.value);
+  if(!id){toast('請選擇要更新的海報');return;}
+  var p=db.posters.find(function(x){return x.id===id;});
+  if(!p){toast('找不到海報');return;}
+  var newStatus=document.getElementById('sub-status').value;
+  var newProgress=Math.min(100,Math.max(0,parseInt(document.getElementById('sub-progress').value)||0));
+  var newNote=document.getElementById('sub-note').value.trim();
+  if(newStatus==='submitted'&&!p.image&&!pendingImgs['sub']){toast('提交審核前請先上傳海報圖片');return;}
+  document.getElementById('sub-loading').style.display='block';
+  p.progress=newProgress;
+  p.status=newStatus;
+  if(newNote) p.note=newNote;
+  if(pendingImgs['sub']) p.image=pendingImgs['sub'];
+  // 如果重新提交，清除舊的審核記錄
+  if(newStatus==='submitted'){ p.reviewNote=''; p.reviewedBy=''; p.reviewedAt=''; }
+  var ok=await gsSave();
+  document.getElementById('sub-loading').style.display='none';
+  if(ok){
+    if(newStatus==='submitted') await chatNotify('📤 *海報提交審核*\n\n海報名稱：'+p.name+'\n負責組員：'+(p.assignee||'─')+'\n製作進度：'+newProgress+'%\n\n請前往審核海報。');
+    clearSubmit(); toast(newStatus==='submitted'?'已提交待審核！':'進度已更新'); go('dashboard');
+  } else toast('已更新本機，雲端同步失敗');
+}
+function clearSubmit(){
+  document.getElementById('sub-poster').value='';
+  document.getElementById('sub-progress').value=100;
+  document.getElementById('sub-status').value='draft';
+  document.getElementById('sub-note').value='';
+  document.getElementById('sub-current-info').style.display='none';
+  removeImg('sub');
+}
+
+// ══ 審核 ════════════════════════════
 function filterReview(f,btn){ reviewFilter=f; document.querySelectorAll('.tab-btn').forEach(function(t){t.classList.remove('active');}); btn.classList.add('active'); renderReview(); }
 function renderReview() {
-  var list = reviewFilter==='submitted' ? db.posters.filter(function(p){return p.status==='submitted';}) : db.posters;
-  var el = document.getElementById('review-list');
-  if (!list.length) { el.innerHTML='<div class="empty"><div class="empty-emoji">✅</div><h3>沒有待審核的海報</h3><p>所有海報都已處理完畢</p></div>'; return; }
-  el.innerHTML = list.map(reviewItem).join('');
+  var list=reviewFilter==='submitted'?db.posters.filter(function(p){return p.status==='submitted';}):db.posters;
+  var el=document.getElementById('review-list');
+  if(!list.length){ el.innerHTML='<div class="empty"><div class="empty-emoji">✅</div><h3>沒有待審核的海報</h3><p>所有海報都已處理完畢</p></div>'; return; }
+  el.innerHTML=list.map(function(p){
+    var imgH=p.image?'<img class="review-img" src="'+p.image+'" onclick="openLB('+p.id+')" alt="">':'<div style="font-size:12px;color:var(--hint);padding:10px 0">（無圖片）</div>';
+    var canAct=p.status==='submitted';
+    var actRow=canAct
+      ?'<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-success" style="flex:1" onclick="openReviewAction('+p.id+',\'approve\')">✓ 通過</button><button class="btn btn-danger" style="flex:1" onclick="openReviewAction('+p.id+',\'reject\')">✕ 退回</button></div>'
+      :'<div style="font-size:12px;color:var(--muted);margin-top:10px">狀態：<b>'+slabel(p.status)+'</b>'+(p.reviewedBy?' · '+p.reviewedBy+' '+p.reviewedAt:'')+'</div>';
+    return '<div class="review-item"><div class="ri-head">'+
+      '<div><strong style="font-size:14px">'+escH(p.name)+'</strong><br>'+(p.assignee?'<span style="font-size:12px;color:var(--blue)">👤 '+escH(p.assignee)+'</span>':'')+'</div>'+
+      '<span class="badge b-'+p.status+'">'+slabel(p.status)+'</span></div>'+
+      '<div class="ri-body">'+imgH+
+      '<div style="display:flex;gap:20px;margin-bottom:10px"><div><div style="font-size:11px;color:var(--muted);font-family:Space Mono,monospace">進度</div><div style="font-size:14px;font-weight:700">'+p.progress+'%</div></div></div>'+
+      (p.note?'<div style="font-size:13px;color:var(--muted);margin-bottom:6px">備註：'+escH(p.note)+'</div>':'')+
+      (p.reviewNote?'<div class="reject-note">上次意見：'+escH(p.reviewNote)+'</div>':'')+
+      actRow+'</div></div>';
+  }).join('');
 }
-function reviewItem(p) {
-  var imgH = p.image ? '<img class="review-img" src="'+p.image+'" onclick="openLB('+p.id+')" alt="">' : '<div style="font-size:12px;color:var(--hint);padding:10px 0">（無圖片）</div>';
-  var canAct = p.status === 'submitted';
-  var actRow = canAct
-    ? '<div style="display:flex;gap:8px;margin-top:14px"><button class="btn btn-success" style="flex:1" onclick="openReviewAction('+p.id+',\'approve\')">✓ 通過</button><button class="btn btn-danger" style="flex:1" onclick="openReviewAction('+p.id+',\'reject\')">✕ 退回</button></div>'
-    : '<div style="font-size:12px;color:var(--muted);margin-top:10px">狀態：<b>'+slabel(p.status)+'</b>'+(p.reviewedBy?' · '+p.reviewedBy+' '+p.reviewedAt:'')+'</div>';
-  return '<div class="review-item"><div class="ri-head">' +
-    '<div><strong style="font-size:14px">'+escH(p.name)+'</strong><br>'+(p.assignee?'<span style="font-size:12px;color:var(--blue)">👤 '+escH(p.assignee)+'</span>':'')+'</div>' +
-    '<span class="badge b-'+p.status+'">'+slabel(p.status)+'</span></div>' +
-    '<div class="ri-body">'+imgH+'<div class="review-meta"><div><div class="rm-label">製作進度</div><div class="rm-val">'+p.progress+'%</div></div></div>' +
-    (p.note?'<div style="font-size:13px;color:var(--muted);margin-bottom:6px">備註：'+escH(p.note)+'</div>':'')+
-    (p.reviewNote?'<div class="reject-note">上次意見：'+escH(p.reviewNote)+'</div>':'')+actRow+'</div></div>';
-}
-function openReviewAction(id, action) {
-  var p = db.posters.find(function(x){ return x.id===id; }); if (!p) return;
-  document.getElementById('sr-title').textContent = action==='approve' ? '通過海報' : '退回海報';
-  var imgTag = p.image ? '<img src="'+p.image+'" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:1px solid var(--border);margin-bottom:14px">' : '';
-  if (action === 'approve') {
-    document.getElementById('sr-content').innerHTML = imgTag + '<p style="font-size:14px;color:var(--muted)">確認通過「'+escH(p.name)+'」？</p>';
-    document.getElementById('sr-actions').innerHTML = '<button class="btn btn-success" style="flex:1" onclick="doApprove('+id+')">✓ 確認通過</button>';
+function openReviewAction(id,action) {
+  var p=db.posters.find(function(x){return x.id===id;}); if(!p) return;
+  document.getElementById('sr-title').textContent=action==='approve'?'通過海報':'退回海報';
+  var imgTag=p.image?'<img src="'+p.image+'" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:1px solid var(--border);margin-bottom:14px">':'';
+  if(action==='approve'){
+    document.getElementById('sr-content').innerHTML=imgTag+'<p style="font-size:14px;color:var(--muted)">確認通過「'+escH(p.name)+'」？</p>';
+    document.getElementById('sr-actions').innerHTML='<button class="btn btn-success" style="flex:1" onclick="doApprove('+id+')">✓ 確認通過</button>';
   } else {
-    document.getElementById('sr-content').innerHTML = imgTag + '<div class="fg"><label class="fl">退回原因 * <span style="font-weight:400;color:var(--hint)">必填・組員可見</span></label><textarea class="ft" id="reject-note" placeholder="請說明需要修改的地方..."></textarea></div>';
-    document.getElementById('sr-actions').innerHTML = '<button class="btn btn-danger" style="flex:1" onclick="doReject('+id+')">送出退回</button>';
+    document.getElementById('sr-content').innerHTML=imgTag+'<div class="fg"><label class="fl">退回原因 * <span style="font-weight:400;color:var(--hint)">必填・組員可見</span></label><textarea class="ft" id="reject-note" placeholder="請說明需要修改的地方..."></textarea></div>';
+    document.getElementById('sr-actions').innerHTML='<button class="btn btn-danger" style="flex:1" onclick="doReject('+id+')">送出退回</button>';
   }
   document.getElementById('sheet-review').classList.add('open');
 }
 async function doApprove(id) {
-  var p = db.posters.find(function(x){ return x.id===id; }); if (!p) return;
+  var p=db.posters.find(function(x){return x.id===id;}); if(!p) return;
   p.status='approved'; p.reviewedBy=db.settings.reviewer||'審核委員'; p.reviewedAt=new Date().toLocaleDateString('zh-TW'); p.reviewNote='';
   await gsSave();
   await chatNotify('✅ *海報審核通過*\n\n海報名稱：'+p.name+'\n負責組員：'+(p.assignee||'─')+'\n審核委員：'+p.reviewedBy+'\n\n恭喜！海報已通過審核。');
   closeSheet('sheet-review'); renderReview(); toast('已通過 ✓');
 }
 async function doReject(id) {
-  var note = document.getElementById('reject-note').value.trim();
-  if (!note) { toast('請填寫退回原因'); return; }
-  var p = db.posters.find(function(x){ return x.id===id; }); if (!p) return;
+  var note=document.getElementById('reject-note').value.trim();
+  if(!note){toast('請填寫退回原因');return;}
+  var p=db.posters.find(function(x){return x.id===id;}); if(!p) return;
   p.status='rejected'; p.reviewNote=note; p.reviewedBy=db.settings.reviewer||'審核委員'; p.reviewedAt=new Date().toLocaleDateString('zh-TW');
   await gsSave();
-  await chatNotify('🔁 *海報需要修改*\n\n海報名稱：'+p.name+'\n負責組員：'+(p.assignee||'─')+'\n\n修改意見：\n'+note);
+  await chatNotify('🔁 *海報需要修改*\n\n海報名稱：'+p.name+'\n負責組員：'+(p.assignee||'─')+'\n\n修改意見：\n'+note+'\n\n請修改後重新提交。');
   closeSheet('sheet-review'); renderReview(); toast('已退回');
 }
 
-// ══ 製作期程 ══════════════════════════════════════
+// ══ 製作期程 ════════════════════════
 function renderSchedule() {
-  var el = document.getElementById('schedule-list');
-  if (!db.schedules || !db.schedules.length) { el.innerHTML='<div class="empty"><div class="empty-emoji">📅</div><h3>尚無期程</h3><p>點擊下方按鈕新增</p></div>'; return; }
-  var today = new Date(); today.setHours(0,0,0,0);
-  el.innerHTML = db.schedules.map(function(s) {
-    var d = new Date(s.date); d.setHours(0,0,0,0);
-    var diff = Math.round((d - today) / 86400000);
-    var cls = diff<0?'overdue':diff<=3?'soon':'ok';
-    var lbl = diff<0?'已逾期 '+Math.abs(diff)+' 天':diff===0?'今天截止':diff<=3?'還有 '+diff+' 天':s.date;
-    return '<div class="sch-card"><div class="sch-head">' +
-      '<div><div style="font-weight:700;font-size:14px">'+escH(s.name)+'</div>'+(s.person?'<div style="font-size:12px;color:var(--blue)">👤 '+escH(s.person)+'</div>':'')+'</div>' +
-      '<button class="btn btn-ghost btn-icon btn-sm" onclick="deleteSchedule('+s.id+')" style="font-size:13px;color:var(--muted)">✕</button></div>' +
-      '<div class="sch-body"><div class="dl-row"><span class="dl-lbl">截止日期</span><span class="dl-val '+cls+'">'+lbl+'</span></div>' +
+  var el=document.getElementById('schedule-list');
+  if(!db.schedules||!db.schedules.length){ el.innerHTML='<div class="empty"><div class="empty-emoji">📅</div><h3>尚無期程</h3></div>'; return; }
+  var today=new Date(); today.setHours(0,0,0,0);
+  el.innerHTML=db.schedules.map(function(s){
+    var d=new Date(s.date); d.setHours(0,0,0,0);
+    var diff=Math.round((d-today)/86400000);
+    var cls=diff<0?'overdue':diff<=3?'soon':'ok';
+    var lbl=diff<0?'已逾期 '+Math.abs(diff)+' 天':diff===0?'今天截止':diff<=3?'還有 '+diff+' 天':s.date;
+    return '<div class="sch-card"><div class="sch-head">'+
+      '<div><div style="font-weight:700;font-size:14px">'+escH(s.name)+'</div>'+(s.person?'<div style="font-size:12px;color:var(--blue)">👤 '+escH(s.person)+'</div>':'')+'</div>'+
+      '<button class="btn btn-ghost btn-icon btn-sm" onclick="deleteSchedule('+s.id+')" style="font-size:13px;color:var(--muted)">✕</button></div>'+
+      '<div class="sch-body"><div class="dl-row"><span class="dl-lbl">截止日期</span><span class="dl-val '+cls+'">'+lbl+'</span></div>'+
       (s.note?'<div class="dl-row"><span class="dl-lbl">備註</span><span style="font-size:13px;color:var(--muted)">'+escH(s.note)+'</span></div>':'')+'</div></div>';
   }).join('');
 }
 function openScheduleAdd() {
-  fillSelect('sch-person', '— 選擇組員（選填）—');
-  document.getElementById('sch-date').value = new Date().toISOString().split('T')[0];
+  fillSelect('sch-person','— 選擇組員（選填）—');
+  document.getElementById('sch-date').value=new Date().toISOString().split('T')[0];
   document.getElementById('sheet-schedule').classList.add('open');
 }
 async function addSchedule() {
-  var name = document.getElementById('sch-name').value.trim(); if (!name) { toast('請填寫名稱'); return; }
-  if (!db.schedules) db.schedules = [];
-  db.schedules.push({ id:Date.now(), name:name, person:document.getElementById('sch-person').value, date:document.getElementById('sch-date').value, note:document.getElementById('sch-note').value.trim() });
+  var name=document.getElementById('sch-name').value.trim(); if(!name){toast('請填寫名稱');return;}
+  if(!db.schedules) db.schedules=[];
+  db.schedules.push({id:Date.now(),name:name,person:document.getElementById('sch-person').value,date:document.getElementById('sch-date').value,note:document.getElementById('sch-note').value.trim()});
   await gsSave();
-  ['sch-name','sch-note'].forEach(function(i){ document.getElementById(i).value=''; });
+  ['sch-name','sch-note'].forEach(function(i){document.getElementById(i).value='';});
   closeSheet('sheet-schedule'); renderSchedule(); toast('期程已新增');
 }
 async function deleteSchedule(id) {
-  if (!confirm('刪除此期程？')) return;
-  db.schedules = db.schedules.filter(function(s){ return s.id!==id; });
+  if(!confirm('刪除此期程？')) return;
+  db.schedules=db.schedules.filter(function(s){return s.id!==id;});
   await gsSave(); renderSchedule(); toast('已刪除');
 }
 
-// ══ 設定 ══════════════════════════════════════════
-async function saveMemberList() {
-  var list = [];
-  for (var i = 0; i < 6; i++) { var el = document.getElementById('mem-'+i); if (el) list.push(el.value.trim() || ('組員'+(i+1))); }
-  db.members = list;
-  var ok = await gsSave();
-  fillSelect('asgn-assignee', '— 選擇負責組員 —');
-  toast(ok ? '組員名單已儲存並同步 ✓' : '已儲存本機，雲端同步失敗');
-}
+// ══ 設定操作 ════════════════════════
 function promptChat() {
-  var v = prompt('貼上 Google Chat Webhook 網址（按取消可跳過）：', chatUrl||''); if (v===null) return;
-  chatUrl = v.trim(); saveLocal();
-  var tc = document.getElementById('tag-chat');
-  if (tc) { tc.textContent = chatUrl ? '已設定 ✓' : '未設定'; tc.className = 'cfg-tag' + (chatUrl ? ' set' : ''); }
-  if (chatUrl) toast('Chat 通知已設定 ✓');
+  var v=prompt('貼上 Google Chat Webhook 網址：',chatUrl||''); if(v===null) return;
+  chatUrl=v.trim(); saveLocal();
+  var tc=document.getElementById('tag-chat');
+  if(tc){tc.textContent=chatUrl?'已設定 ✓':'未設定';tc.className='cfg-tag'+(chatUrl?' set':'');}
+  if(chatUrl) toast('Chat 通知已設定 ✓');
 }
 async function saveSettings() {
-  db.settings.event = document.getElementById('cfg-event').value.trim();
-  db.settings.reviewer = document.getElementById('cfg-reviewer').value.trim() || '審核委員';
+  // 直接讀取 DOM 值，避免被快取覆蓋
+  var evtVal = document.getElementById('cfg-event').value.trim();
+  var revVal = document.getElementById('cfg-reviewer').value.trim() || '審核委員';
+  db.settings.event = evtVal;
+  db.settings.reviewer = revVal;
   var ok = await gsSave();
-  document.getElementById('tb-event').textContent = db.settings.event || '海報審核';
-  document.getElementById('ds-event').textContent = db.settings.event || '活動名稱未設定';
+  document.getElementById('tb-event').textContent = evtVal || '海報審核';
+  document.getElementById('ds-event').textContent = evtVal || '活動名稱未設定';
   toast(ok ? '設定已儲存並同步 ✓' : '已儲存本機，雲端同步失敗');
 }
 function clearLocalData() {
-  if (!confirm('清除本機快取？頁面將重新整理並從雲端重新載入。')) return;
+  if(!confirm('清除本機快取？頁面將重新整理。')) return;
   localStorage.removeItem('prs-db'); localStorage.removeItem('prs-chat');
-  toast('清除中，重新載入...'); setTimeout(function(){ location.reload(); }, 800);
+  toast('清除中...'); setTimeout(function(){location.reload();},800);
 }
 
-// ══ Lightbox & 工具 ═══════════════════════════════
+// ══ Lightbox & 工具 ═════════════════
 function openLB(id){ var p=db.posters.find(function(x){return x.id==id;}); if(!p||!p.image) return; document.getElementById('lb-img').src=p.image; document.getElementById('lightbox').classList.add('open'); }
 function closeLB(){ document.getElementById('lightbox').classList.remove('open'); setTimeout(function(){document.getElementById('lb-img').src='';},300); }
 function closeSheet(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.sheet-overlay').forEach(function(el){ el.addEventListener('click', function(e){ if(e.target===el) el.classList.remove('open'); }); });
+document.querySelectorAll('.sheet-overlay').forEach(function(el){ el.addEventListener('click',function(e){if(e.target===el) el.classList.remove('open');}); });
 function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 var _tt;
 function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(function(){t.classList.remove('show');},3200); }
 
-// ══ 初始化 ════════════════════════════════════════
+// ══ 初始化 ══════════════════════════
 loadLocal();
 renderDashboard();
-updateSettingsFields();
-fillSelect('asgn-assignee', '— 選擇負責組員 —');
-document.getElementById('tb-event').textContent = db.settings.event || '海報審核';
-document.getElementById('ds-event').textContent = db.settings.event || '活動名稱未設定';
-gsLoad().then(function(){ renderPage(); });
+renderMemberEditor();
+document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
+document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
+document.getElementById('cfg-event').value=db.settings.event||'';
+document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';
+// 啟動時從雲端載入
+gsLoad().then(function(ok){
+  if(ok){
+    renderDashboard();
+    document.getElementById('cfg-event').value=db.settings.event||'';
+    document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';
+    renderMemberEditor();
+  }
+});
 </script>
 </body>
 </html>
