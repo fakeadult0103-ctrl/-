@@ -224,69 +224,35 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
   <!-- 提交海報（組員） -->
   <div class="page" id="page-submit">
     <div class="sh" style="margin-top:0">提交海報</div>
-    <!-- 模式切換 tabs -->
-    <div class="tabs" style="margin-bottom:16px">
-      <button class="tab-btn active" id="sub-tab-update" onclick="switchSubmitMode('update',this)">更新已分配海報</button>
-      <button class="tab-btn" id="sub-tab-new" onclick="switchSubmitMode('new',this)">自行上傳新海報</button>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">填寫資料並上傳海報圖片，提交後等候審核委員審核</p>
+    <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="subn-name" placeholder="例：環境議題海報"></div>
+    <div class="fg">
+      <label class="fl">你的名字 <span style="font-weight:400;color:var(--hint)">（選填）</span></label>
+      <select class="fs" id="subn-assignee"><option value="">— 選擇（可略過）—</option></select>
     </div>
-
-    <!-- 模式一：更新已分配 -->
-    <div id="sub-mode-update">
-      <div class="info-box info-blue">選擇組長分配給你的海報，更新進度或提交審核</div>
-      <div class="fg">
-        <label class="fl">選擇你負責的海報 *</label>
-        <select class="fs" id="sub-poster" onchange="onSubPosterChange()"><option value="">— 選擇海報 —</option></select>
-      </div>
-      <div id="sub-current-info" style="display:none;background:var(--paper2);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted)"></div>
-      <div class="fr">
-        <div class="fg"><label class="fl">更新進度 %</label><input type="number" class="fi" id="sub-progress" min="0" max="100" value="100"></div>
-        <div class="fg"><label class="fl">更新狀態</label>
-          <select class="fs" id="sub-status">
-            <option value="draft">製作中</option>
-            <option value="submitted">提交待審核</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg">
-        <label class="fl">更新圖片 <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB（選填）</span></label>
-        <div class="upload-zone" id="sub-zone" ondragover="onDragOver(event,'sub')" ondragleave="onDragLeave(event,'sub')" ondrop="onDrop(event,'sub')">
-          <input type="file" accept=".jpg,.jpeg" id="sub-file" onchange="onFileChange(event,'sub')">
-          <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
-          <div id="sub-preview"></div><div id="sub-err" class="upload-err" style="display:none"></div>
-        </div>
-      </div>
-      <div class="fg"><label class="fl">備註說明</label><textarea class="ft" id="sub-note" placeholder="說明製作狀況、修改內容..."></textarea></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn btn-primary" style="flex:1" onclick="submitUpdate()">更新送出</button>
-        <button class="btn btn-ghost" onclick="clearSubmitUpdate()">清除</button>
-      </div>
-      <div id="sub-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 上傳中...</div>
-    </div>
-
-    <!-- 模式二：自行上傳新海報 -->
-    <div id="sub-mode-new" style="display:none">
-      <div class="info-box info-amber">自行建立並上傳海報，不需要組長事先分配</div>
-      <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="subn-name" placeholder="例：我的海報作品"></div>
-      <div class="fg">
-        <label class="fl">上傳者（你的名字）</label>
-        <select class="fs" id="subn-assignee"><option value="">— 選擇你的名字 —</option></select>
-      </div>
+    <div class="fr">
       <div class="fg"><label class="fl">製作進度 %</label><input type="number" class="fi" id="subn-progress" min="0" max="100" value="100"></div>
-      <div class="fg">
-        <label class="fl">海報圖片 * <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB</span></label>
-        <div class="upload-zone" id="subn-zone" ondragover="onDragOver(event,'subn')" ondragleave="onDragLeave(event,'subn')" ondrop="onDrop(event,'subn')">
-          <input type="file" accept=".jpg,.jpeg" id="subn-file" onchange="onFileChange(event,'subn')">
-          <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
-          <div id="subn-preview"></div><div id="subn-err" class="upload-err" style="display:none"></div>
-        </div>
+      <div class="fg"><label class="fl">狀態</label>
+        <select class="fs" id="subn-status">
+          <option value="submitted">提交待審核</option>
+          <option value="draft">製作中（暫存）</option>
+        </select>
       </div>
-      <div class="fg"><label class="fl">備註說明</label><textarea class="ft" id="subn-note" placeholder="說明海報內容、設計方向..."></textarea></div>
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button class="btn btn-primary" style="flex:1" onclick="submitNew()">提交審核</button>
-        <button class="btn btn-ghost" onclick="clearSubmitNew()">清除</button>
-      </div>
-      <div id="subn-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 上傳中...</div>
     </div>
+    <div class="fg">
+      <label class="fl">海報圖片 * <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB</span></label>
+      <div class="upload-zone" id="subn-zone" ondragover="onDragOver(event,'subn')" ondragleave="onDragLeave(event,'subn')" ondrop="onDrop(event,'subn')">
+        <input type="file" accept=".jpg,.jpeg" id="subn-file" onchange="onFileChange(event,'subn')">
+        <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
+        <div id="subn-preview"></div><div id="subn-err" class="upload-err" style="display:none"></div>
+      </div>
+    </div>
+    <div class="fg"><label class="fl">備註說明 <span style="font-weight:400;color:var(--hint)">（選填）</span></label><textarea class="ft" id="subn-note" placeholder="說明海報內容、設計方向..."></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="submitNew()">送出</button>
+      <button class="btn btn-ghost" onclick="clearSubmitNew()">清除</button>
+    </div>
+    <div id="subn-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 上傳中...</div>
   </div>
 
   <!-- 審核 -->
