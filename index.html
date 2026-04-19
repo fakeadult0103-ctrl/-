@@ -95,7 +95,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .dl-lbl{font-size:13px;font-weight:500}
 .dl-val{font-size:13px;font-family:'Space Mono',monospace;color:var(--muted)}
 .dl-val.overdue{color:var(--red);font-weight:700}.dl-val.soon{color:var(--amber);font-weight:700}.dl-val.ok{color:var(--green)}
-/* 設定頁面 */
 .cfg-block{background:white;border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
 .cfg-row{padding:12px 16px;border-bottom:1px solid var(--paper2);display:flex;align-items:center;gap:12px}
 .cfg-row:last-child{border-bottom:none}
@@ -105,7 +104,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .cfg-input:focus{outline:none;border-color:var(--blue)}
 .cfg-tag{font-size:11px;background:var(--paper2);color:var(--muted);padding:4px 10px;border-radius:12px;font-family:'Space Mono',monospace;cursor:pointer;white-space:nowrap;flex-shrink:0}
 .cfg-tag.set{background:var(--green-light);color:var(--green)}
-/* 組員編輯 */
 .mem-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .mem-row:last-child{margin-bottom:0}
 .mem-num{width:20px;font-size:12px;color:var(--hint);font-family:'Space Mono',monospace;text-align:center;flex-shrink:0}
@@ -116,6 +114,9 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .tabs{display:flex;background:var(--paper2);border-radius:var(--rs);padding:3px;margin-bottom:14px}
 .tab-btn{flex:1;padding:8px;font-size:13px;font-weight:700;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(--muted);font-family:inherit;transition:all .15s}
 .tab-btn.active{background:white;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.info-box{border-radius:var(--rs);padding:10px 12px;font-size:13px;margin-bottom:14px}
+.info-blue{background:var(--blue-light);color:var(--blue);border:1px solid #b5d4f4}
+.info-amber{background:var(--amber-light);color:var(--amber);border:1px solid #f5dfa0}
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:9000;align-items:center;justify-content:center;padding:20px}
 .lightbox.open{display:flex}
 .lightbox img{max-width:100%;max-height:90dvh;border-radius:10px;object-fit:contain}
@@ -127,7 +128,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .empty h3{font-size:16px;font-weight:700;margin-bottom:6px}
 .empty p{font-size:13px;color:var(--muted)}
 .divider{height:1px;background:var(--border);margin:12px 0}
-.info-box{background:var(--blue-light);border:1px solid #b5d4f4;border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--blue);margin-bottom:14px}
 @media(min-width:640px){
   .bottom-nav{display:none}.scroll-area{padding-bottom:32px}.app{flex-direction:row}
   .ds{display:flex;flex-direction:column;width:220px;flex-shrink:0;background:var(--ink);color:var(--paper);min-height:100dvh;position:sticky;top:0;height:100dvh;overflow-y:auto}
@@ -189,16 +189,16 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
     </div>
     <div class="workload-card">
       <div class="workload-title">組員待處理海報數</div>
-      <div id="workload-list"><div style="font-size:13px;color:var(--hint)">載入中...</div></div>
+      <div id="workload-list"></div>
     </div>
     <div class="sh">所有海報</div>
     <div id="poster-list"></div>
   </div>
 
-  <!-- 分派任務（組長用） -->
+  <!-- 分派任務（組長） -->
   <div class="page" id="page-assign">
     <div class="sh" style="margin-top:0">分派任務</div>
-    <div class="info-box">📋 組長專用：建立海報任務並分派給組員</div>
+    <div class="info-box info-blue">📋 組長專用：建立海報任務並分派給組員</div>
     <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="asgn-name" placeholder="例：環境議題海報"></div>
     <div class="fg"><label class="fl">指派給 *</label><select class="fs" id="asgn-assignee"><option value="">— 選擇負責組員 —</option></select></div>
     <div class="fr">
@@ -221,38 +221,72 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
     <div id="asgn-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 處理中...</div>
   </div>
 
-  <!-- 提交海報（組員用） -->
+  <!-- 提交海報（組員） -->
   <div class="page" id="page-submit">
     <div class="sh" style="margin-top:0">提交海報</div>
-    <div class="info-box">📤 組員專用：更新製作進度或提交海報待審核</div>
-    <div class="fg">
-      <label class="fl">選擇你負責的海報 *</label>
-      <select class="fs" id="sub-poster" onchange="onSubPosterChange()"><option value="">— 選擇海報 —</option></select>
+    <!-- 模式切換 tabs -->
+    <div class="tabs" style="margin-bottom:16px">
+      <button class="tab-btn active" id="sub-tab-update" onclick="switchSubmitMode('update',this)">更新已分配海報</button>
+      <button class="tab-btn" id="sub-tab-new" onclick="switchSubmitMode('new',this)">自行上傳新海報</button>
     </div>
-    <div id="sub-current-info" style="display:none;background:var(--paper2);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted)"></div>
-    <div class="fr">
-      <div class="fg"><label class="fl">更新進度 %</label><input type="number" class="fi" id="sub-progress" min="0" max="100" value="100"></div>
-      <div class="fg"><label class="fl">更新狀態</label>
-        <select class="fs" id="sub-status">
-          <option value="draft">製作中</option>
-          <option value="submitted">提交待審核</option>
-        </select>
+
+    <!-- 模式一：更新已分配 -->
+    <div id="sub-mode-update">
+      <div class="info-box info-blue">選擇組長分配給你的海報，更新進度或提交審核</div>
+      <div class="fg">
+        <label class="fl">選擇你負責的海報 *</label>
+        <select class="fs" id="sub-poster" onchange="onSubPosterChange()"><option value="">— 選擇海報 —</option></select>
       </div>
-    </div>
-    <div class="fg">
-      <label class="fl">更新圖片 <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB（選填）</span></label>
-      <div class="upload-zone" id="sub-zone" ondragover="onDragOver(event,'sub')" ondragleave="onDragLeave(event,'sub')" ondrop="onDrop(event,'sub')">
-        <input type="file" accept=".jpg,.jpeg" id="sub-file" onchange="onFileChange(event,'sub')">
-        <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
-        <div id="sub-preview"></div><div id="sub-err" class="upload-err" style="display:none"></div>
+      <div id="sub-current-info" style="display:none;background:var(--paper2);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted)"></div>
+      <div class="fr">
+        <div class="fg"><label class="fl">更新進度 %</label><input type="number" class="fi" id="sub-progress" min="0" max="100" value="100"></div>
+        <div class="fg"><label class="fl">更新狀態</label>
+          <select class="fs" id="sub-status">
+            <option value="draft">製作中</option>
+            <option value="submitted">提交待審核</option>
+          </select>
+        </div>
       </div>
+      <div class="fg">
+        <label class="fl">更新圖片 <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB（選填）</span></label>
+        <div class="upload-zone" id="sub-zone" ondragover="onDragOver(event,'sub')" ondragleave="onDragLeave(event,'sub')" ondrop="onDrop(event,'sub')">
+          <input type="file" accept=".jpg,.jpeg" id="sub-file" onchange="onFileChange(event,'sub')">
+          <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
+          <div id="sub-preview"></div><div id="sub-err" class="upload-err" style="display:none"></div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">備註說明</label><textarea class="ft" id="sub-note" placeholder="說明製作狀況、修改內容..."></textarea></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="submitUpdate()">更新送出</button>
+        <button class="btn btn-ghost" onclick="clearSubmitUpdate()">清除</button>
+      </div>
+      <div id="sub-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 上傳中...</div>
     </div>
-    <div class="fg"><label class="fl">備註說明</label><textarea class="ft" id="sub-note" placeholder="說明製作狀況、修改內容..."></textarea></div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-primary" style="flex:1" onclick="submitUpdate()">更新送出</button>
-      <button class="btn btn-ghost" onclick="clearSubmit()">清除</button>
+
+    <!-- 模式二：自行上傳新海報 -->
+    <div id="sub-mode-new" style="display:none">
+      <div class="info-box info-amber">自行建立並上傳海報，不需要組長事先分配</div>
+      <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="subn-name" placeholder="例：我的海報作品"></div>
+      <div class="fg">
+        <label class="fl">上傳者（你的名字）</label>
+        <select class="fs" id="subn-assignee"><option value="">— 選擇你的名字 —</option></select>
+      </div>
+      <div class="fg"><label class="fl">製作進度 %</label><input type="number" class="fi" id="subn-progress" min="0" max="100" value="100"></div>
+      <div class="fg">
+        <label class="fl">海報圖片 * <span style="font-weight:400;color:var(--hint)">JPG・最大 1MB</span></label>
+        <div class="upload-zone" id="subn-zone" ondragover="onDragOver(event,'subn')" ondragleave="onDragLeave(event,'subn')" ondrop="onDrop(event,'subn')">
+          <input type="file" accept=".jpg,.jpeg" id="subn-file" onchange="onFileChange(event,'subn')">
+          <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳圖片</div><div class="upload-sub">僅限 JPG・1MB 以下</div>
+          <div id="subn-preview"></div><div id="subn-err" class="upload-err" style="display:none"></div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">備註說明</label><textarea class="ft" id="subn-note" placeholder="說明海報內容、設計方向..."></textarea></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-primary" style="flex:1" onclick="submitNew()">提交審核</button>
+        <button class="btn btn-ghost" onclick="clearSubmitNew()">清除</button>
+      </div>
+      <div id="subn-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 上傳中...</div>
     </div>
-    <div id="sub-loading" style="display:none;text-align:center;margin-top:14px;font-size:13px;color:var(--muted)">⏳ 上傳中...</div>
   </div>
 
   <!-- 審核 -->
@@ -285,7 +319,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
         <input type="text" class="cfg-input" id="cfg-reviewer" placeholder="林老師">
       </div>
     </div>
-
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
       <div class="sh" style="margin:0">組員名單</div>
       <button class="btn btn-ghost btn-sm" onclick="addMemberRow()">＋ 新增組員</button>
@@ -294,7 +327,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
       <div id="member-editor"></div>
       <button class="btn btn-ghost btn-full btn-sm" onclick="saveMemberList()" style="margin-top:10px">儲存組員名單</button>
     </div>
-
     <div class="cfg-block">
       <div class="cfg-row">
         <div style="flex:1"><div class="cfg-row-label">雲端同步</div><div class="cfg-row-sub">Google Sheets 自動連線</div></div>
@@ -305,7 +337,6 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
         <span class="cfg-tag" id="tag-chat" onclick="promptChat()">未設定</span>
       </div>
     </div>
-
     <button class="btn btn-primary btn-full" onclick="saveSettings()">儲存設定</button>
     <div style="height:8px"></div>
     <button class="btn btn-ghost btn-full" onclick="forceSync()">↻ 強制同步</button>
@@ -372,250 +403,153 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 <div class="toast" id="toast"></div>
 
 <script>
-// ══ 設定 ════════════════════════════
-var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzffWsHWvwK6LxcuaGO1NtLpU09YxwNvWpKgkT-lmtxgzxZAyt9LXuLWHDTXGAI4V28/exec';
+var SCRIPT_URL='https://script.google.com/macros/s/AKfycbzffWsHWvwK6LxcuaGO1NtLpU09YxwNvWpKgkT-lmtxgzxZAyt9LXuLWHDTXGAI4V28/exec';
 
-// ══ 狀態 ════════════════════════════
-var db = { posters:[], schedules:[], settings:{ event:'', reviewer:'審核委員' }, members:['組員一','組員二','組員三','組員四','組員五','組員六'] };
-var chatUrl = '';
-var reviewFilter = 'submitted';
-var pendingImgs = {};
-var currentPage = 'dashboard';
+// ── 狀態 ──
+var db={posters:[],schedules:[],settings:{event:'',reviewer:'審核委員'},members:['組員一','組員二','組員三','組員四','組員五','組員六']};
+var chatUrl='';
+var reviewFilter='submitted';
+var pendingImgs={};
+var currentPage='dashboard';
+var submitMode='update';
 
-// ══ 本機快取 ════════════════════════
-function loadLocal() {
-  try {
-    var d = localStorage.getItem('prs-db');
-    if (d) {
-      var p = JSON.parse(d);
-      if (p.posters !== undefined) db.posters = p.posters;
-      if (p.schedules !== undefined) db.schedules = p.schedules;
-      if (p.settings) db.settings = p.settings;
-      if (p.members && p.members.length) db.members = p.members;
-    }
-  } catch(e) {}
-  try { var c = localStorage.getItem('prs-chat'); if (c) chatUrl = c; } catch(e) {}
+// ── 本機快取 ──
+function loadLocal(){
+  try{var d=localStorage.getItem('prs-db');if(d){var p=JSON.parse(d);if(p&&typeof p==='object'){if(Array.isArray(p.posters))db.posters=p.posters;if(Array.isArray(p.schedules))db.schedules=p.schedules;if(p.settings&&p.settings.reviewer)db.settings=p.settings;if(Array.isArray(p.members)&&p.members.length)db.members=p.members;}}}catch(e){}
+  try{var c=localStorage.getItem('prs-chat');if(c)chatUrl=c;}catch(e){}
 }
-function saveLocal() {
-  try { localStorage.setItem('prs-db', JSON.stringify(db)); } catch(e) {}
-  try { localStorage.setItem('prs-chat', chatUrl); } catch(e) {}
+function saveLocal(){
+  try{localStorage.setItem('prs-db',JSON.stringify(db));}catch(e){}
+  try{localStorage.setItem('prs-chat',chatUrl);}catch(e){}
 }
 
-// ══ 雲端同步（修正版，處理 Apps Script redirect）════
-async function gsLoad() {
+// ── 雲端同步（保護版：雲端空資料不覆蓋本機）──
+async function gsLoad(){
   setSyncState('syncing');
-  try {
-    // Apps Script 會 redirect，需要 follow redirects
-    var res = await fetch(SCRIPT_URL + '?action=load&t=' + Date.now(), {
-      redirect: 'follow'
-    });
-    var text = await res.text();
-    // 找到 JSON 部分（Apps Script 有時會包含額外字元）
-    var jsonStart = text.indexOf('{');
-    var jsonEnd = text.lastIndexOf('}');
-    if (jsonStart === -1) throw new Error('回應格式錯誤');
-    var data = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
-    if (data.error) throw new Error(data.error);
-    if (data.posters !== undefined) {
-      db.posters = data.posters || [];
-      db.schedules = data.schedules || [];
-      if (data.settings) {
-        db.settings.event = data.settings.event || db.settings.event;
-        db.settings.reviewer = data.settings.reviewer || db.settings.reviewer;
+  try{
+    var res=await fetch(SCRIPT_URL+'?action=load&t='+Date.now(),{redirect:'follow'});
+    var text=await res.text();
+    var j=text.indexOf('{'),k=text.lastIndexOf('}');
+    if(j===-1)throw new Error('格式錯誤');
+    var data=JSON.parse(text.substring(j,k+1));
+    if(data.error)throw new Error(data.error);
+    // ★ 保護：只有雲端有資料才覆蓋本機，避免雲端空資料把本機清空
+    if(data.posters!==undefined){
+      if(Array.isArray(data.posters)&&(data.posters.length>0||db.posters.length===0)){
+        db.posters=data.posters;
       }
-      if (data.members && data.members.length) db.members = data.members;
+      if(Array.isArray(data.schedules)&&(data.schedules.length>0||db.schedules.length===0)){
+        db.schedules=data.schedules;
+      }
+      if(data.settings&&data.settings.reviewer){
+        db.settings=data.settings;
+      }
+      if(Array.isArray(data.members)&&data.members.length>0){
+        db.members=data.members;
+      }
       saveLocal();
     }
     setSyncState('ok');
-    updateSyncLabel('已同步 ' + new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}));
+    updateSyncLabel('已同步 '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}));
     return true;
-  } catch(e) {
+  }catch(e){
     setSyncState('error');
-    updateSyncLabel('同步失敗：' + e.message);
-    console.error('gsLoad error:', e);
+    updateSyncLabel('同步失敗：'+e.message);
     return false;
   }
 }
 
-async function gsSave() {
+async function gsSave(){
   saveLocal();
   setSyncState('syncing');
-  try {
-    var payload = JSON.stringify({ action: 'save', data: db });
-    var res = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      redirect: 'follow',
-      headers: { 'Content-Type': 'text/plain' }, // 用 text/plain 避免 preflight CORS
-      body: payload
-    });
-    var text = await res.text();
-    var jsonStart = text.indexOf('{');
-    var jsonEnd = text.lastIndexOf('}');
-    if (jsonStart === -1) throw new Error('回應格式錯誤');
-    var data = JSON.parse(text.substring(jsonStart, jsonEnd + 1));
-    if (data.error) throw new Error(data.error);
+  try{
+    // 先確認資料有效才送出
+    if(!Array.isArray(db.posters)){db.posters=[];}
+    var res=await fetch(SCRIPT_URL,{method:'POST',redirect:'follow',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'save',data:db})});
+    var text=await res.text();
+    var j=text.indexOf('{'),k=text.lastIndexOf('}');
+    if(j===-1)throw new Error('格式錯誤');
+    var data=JSON.parse(text.substring(j,k+1));
+    if(data.error)throw new Error(data.error);
     setSyncState('ok');
-    updateSyncLabel('已同步 ' + new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}));
-    try { new BroadcastChannel('prs').postMessage({ type:'update', db:db }); } catch(e) {}
+    updateSyncLabel('已同步 '+new Date().toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit'}));
+    try{new BroadcastChannel('prs').postMessage({type:'update',db:JSON.parse(JSON.stringify(db))});}catch(e){}
     return true;
-  } catch(e) {
+  }catch(e){
     setSyncState('error');
-    updateSyncLabel('儲存失敗：' + e.message);
-    console.error('gsSave error:', e);
+    updateSyncLabel('儲存失敗：'+e.message);
     return false;
   }
 }
 
-async function forceSync() {
+async function forceSync(){
   toast('同步中...');
-  var ok = await gsLoad();
-  if (currentPage !== 'settings') renderPage();
-  else syncSettingsDisplay();
-  toast(ok ? '同步完成 ✓' : '無法連線，請確認網路');
+  var ok=await gsLoad();
+  renderPage();
+  if(currentPage==='settings'){document.getElementById('cfg-event').value=db.settings.event||'';document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';}
+  toast(ok?'同步完成 ✓':'無法連線，請確認網路');
 }
 
-try {
-  new BroadcastChannel('prs').onmessage = function(e) {
-    if (e.data && e.data.type === 'update' && e.data.db) {
-      db.posters = e.data.db.posters || db.posters;
-      db.schedules = e.data.db.schedules || db.schedules;
-      db.settings = e.data.db.settings || db.settings;
-      db.members = e.data.db.members || db.members;
-      if (currentPage !== 'settings') renderPage();
-      toast('收到最新資料 ↻');
-    }
-  };
-} catch(e) {}
+try{new BroadcastChannel('prs').onmessage=function(e){if(e.data&&e.data.type==='update'&&e.data.db&&Array.isArray(e.data.db.posters)&&e.data.db.posters.length>0){db.posters=e.data.db.posters;db.schedules=e.data.db.schedules||db.schedules;db.settings=e.data.db.settings||db.settings;db.members=e.data.db.members||db.members;saveLocal();if(currentPage!=='settings')renderPage();toast('收到最新資料 ↻');}};}catch(e){}
 
-setInterval(function() {
-  gsLoad().then(function() {
-    if (currentPage !== 'settings') renderPage();
-    else syncSettingsDisplay();
-  });
-}, 30000);
+setInterval(function(){gsLoad().then(function(){if(currentPage!=='settings')renderPage();});},30000);
 
-async function chatNotify(text) {
-  if (!chatUrl) return;
-  try { await fetch(chatUrl, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({text:text}) }); } catch(e) {}
-}
+async function chatNotify(text){if(!chatUrl)return;try{await fetch(chatUrl,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text})});}catch(e){}}
 
-function setSyncState(s) {
-  ['sync-dot','sync-dot2'].forEach(function(id) {
-    var el=document.getElementById(id); if(!el) return;
-    el.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':'');
-  });
-}
-function updateSyncLabel(t) { var el=document.getElementById('sync-label'); if(el) el.textContent=t; }
+function setSyncState(s){['sync-dot','sync-dot2'].forEach(function(id){var el=document.getElementById(id);if(!el)return;el.className='sync-dot'+(s==='syncing'?' syncing':s==='error'?' error':'');});}
+function updateSyncLabel(t){var el=document.getElementById('sync-label');if(el)el.textContent=t;}
 
-// ══ 導航 ════════════════════════════
-function go(name) {
-  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+// ── 導航 ──
+function go(name){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
   document.getElementById('page-'+name).classList.add('active');
-  document.querySelectorAll('.nav-tab,.ds-ni').forEach(function(t){ t.classList.remove('active'); });
-  var nb=document.getElementById('nav-'+name); if(nb) nb.classList.add('active');
-  document.querySelectorAll('.ds-ni').forEach(function(n){ if(n.getAttribute('onclick')&&n.getAttribute('onclick').indexOf("'"+name+"'")!==-1) n.classList.add('active'); });
+  document.querySelectorAll('.nav-tab,.ds-ni').forEach(function(t){t.classList.remove('active');});
+  var nb=document.getElementById('nav-'+name);if(nb)nb.classList.add('active');
+  document.querySelectorAll('.ds-ni').forEach(function(n){if(n.getAttribute('onclick')&&n.getAttribute('onclick').indexOf("'"+name+"'")!==-1)n.classList.add('active');});
   currentPage=name;
   document.getElementById('scroll-area').scrollTo(0,0);
   renderPage();
 }
-
-function renderPage() {
-  if(currentPage==='dashboard') renderDashboard();
-  else if(currentPage==='assign') { fillSelect('asgn-assignee','— 選擇負責組員 —'); }
-  else if(currentPage==='submit') renderSubmitPage();
-  else if(currentPage==='review') renderReview();
-  else if(currentPage==='schedule') renderSchedule();
-  else if(currentPage==='settings') {
-    syncSettingsDisplay();
+function renderPage(){
+  if(currentPage==='dashboard')renderDashboard();
+  else if(currentPage==='assign')fillSelect('asgn-assignee','— 選擇負責組員 —');
+  else if(currentPage==='submit')renderSubmitPage();
+  else if(currentPage==='review')renderReview();
+  else if(currentPage==='schedule')renderSchedule();
+  else if(currentPage==='settings'){
+    var cfgE=document.getElementById('cfg-event'),cfgR=document.getElementById('cfg-reviewer');
+    if(cfgE&&document.activeElement!==cfgE)cfgE.value=db.settings.event||'';
+    if(cfgR&&document.activeElement!==cfgR)cfgR.value=db.settings.reviewer||'';
     renderMemberEditor();
+    var tc=document.getElementById('tag-chat');if(tc){tc.textContent=chatUrl?'已設定 ✓':'未設定';tc.className='cfg-tag'+(chatUrl?' set':'');}
+    document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
+    document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
   }
 }
 
-// ══ 設定頁面 ═══════════════════════
-// 只同步不重建 DOM 的欄位
-function syncSettingsDisplay() {
-  var cfgEvent = document.getElementById('cfg-event');
-  var cfgReviewer = document.getElementById('cfg-reviewer');
-  if (cfgEvent && document.activeElement !== cfgEvent) cfgEvent.value = db.settings.event || '';
-  if (cfgReviewer && document.activeElement !== cfgReviewer) cfgReviewer.value = db.settings.reviewer || '';
-  document.getElementById('tb-event').textContent = db.settings.event || '海報審核';
-  document.getElementById('ds-event').textContent = db.settings.event || '活動名稱未設定';
-  var tc=document.getElementById('tag-chat');
-  if(tc){ tc.textContent=chatUrl?'已設定 ✓':'未設定'; tc.className='cfg-tag'+(chatUrl?' set':''); }
-}
+// ── 下拉選單 ──
+function fillSelect(id,empty){var sel=document.getElementById(id);if(!sel)return;var cur=sel.value;sel.innerHTML='';if(empty){var o=document.createElement('option');o.value='';o.textContent=empty;sel.appendChild(o);}(db.members||[]).forEach(function(m){var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);});if(cur)sel.value=cur;}
 
-// 渲染組員編輯器（只在首次進入設定頁時呼叫）
-var memberEditorBuilt = false;
-function renderMemberEditor() {
-  // 只在沒有組員欄位被 focus 時才重建
-  var anyFocused = false;
-  document.querySelectorAll('.mem-input').forEach(function(el){ if(document.activeElement===el) anyFocused=true; });
-  if(anyFocused) return;
-  var el = document.getElementById('member-editor');
-  if (!el) return;
-  el.innerHTML = db.members.map(function(m, i) {
-    return '<div class="mem-row" id="memrow-'+i+'">' +
-      '<span class="mem-num">'+(i+1)+'</span>' +
-      '<input type="text" class="mem-input" id="mem-'+i+'" value="'+escH(m)+'" placeholder="組員名稱">' +
-      '<button class="mem-del" onclick="deleteMemberRow('+i+')" title="刪除">×</button>' +
-      '</div>';
-  }).join('');
-}
-
-function addMemberRow() {
-  db.members.push('');
-  renderMemberEditor();
-  // focus 最後一個
-  var last = document.getElementById('mem-'+(db.members.length-1));
-  if(last) last.focus();
-}
-
-function deleteMemberRow(i) {
-  if(db.members.length <= 1){ toast('至少需要保留 1 位組員'); return; }
-  db.members.splice(i, 1);
-  renderMemberEditor();
-}
-
-async function saveMemberList() {
-  var list = [];
-  document.querySelectorAll('.mem-input').forEach(function(el){ var v=el.value.trim(); if(v) list.push(v); });
-  if(!list.length){ toast('請至少填寫一位組員名稱'); return; }
-  db.members = list;
-  var ok = await gsSave();
-  renderMemberEditor();
-  fillSelect('asgn-assignee','— 選擇負責組員 —');
-  toast(ok ? '組員名單已儲存並同步 ✓' : '已儲存本機，雲端同步失敗');
-}
-
-// ══ 下拉選單 ════════════════════════
-function fillSelect(id, emptyLabel) {
-  var sel=document.getElementById(id); if(!sel) return;
-  var cur=sel.value; sel.innerHTML='';
-  if(emptyLabel){ var o=document.createElement('option'); o.value=''; o.textContent=emptyLabel; sel.appendChild(o); }
-  (db.members||[]).forEach(function(m){ var o=document.createElement('option'); o.value=m; o.textContent=m; sel.appendChild(o); });
-  if(cur) sel.value=cur;
-}
-
-// ══ 上傳 ════════════════════════════
-function onDragOver(e,p){ e.preventDefault(); document.getElementById(p+'-zone').classList.add('drag-over'); }
-function onDragLeave(e,p){ document.getElementById(p+'-zone').classList.remove('drag-over'); }
-function onDrop(e,p){ e.preventDefault(); document.getElementById(p+'-zone').classList.remove('drag-over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0],p); }
-function onFileChange(e,p){ if(e.target.files[0]) handleFile(e.target.files[0],p); }
-function handleFile(file,p) {
-  var errEl=document.getElementById(p+'-err'), preEl=document.getElementById(p+'-preview');
-  errEl.style.display='none'; preEl.innerHTML=''; delete pendingImgs[p];
+// ── 上傳 ──
+function onDragOver(e,p){e.preventDefault();document.getElementById(p+'-zone').classList.add('drag-over');}
+function onDragLeave(e,p){document.getElementById(p+'-zone').classList.remove('drag-over');}
+function onDrop(e,p){e.preventDefault();document.getElementById(p+'-zone').classList.remove('drag-over');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0],p);}
+function onFileChange(e,p){if(e.target.files[0])handleFile(e.target.files[0],p);}
+function handleFile(file,p){
+  var errEl=document.getElementById(p+'-err'),preEl=document.getElementById(p+'-preview');
+  errEl.style.display='none';preEl.innerHTML='';delete pendingImgs[p];
   var n=file.name.toLowerCase();
-  if(file.type!=='image/jpeg'&&!n.endsWith('.jpg')&&!n.endsWith('.jpeg')){ errEl.textContent='❌ 只接受 JPG 格式'; errEl.style.display='block'; return; }
-  if(file.size>1048576){ errEl.textContent='❌ 檔案 '+(file.size/1048576).toFixed(2)+'MB，超過 1MB'; errEl.style.display='block'; return; }
+  if(file.type!=='image/jpeg'&&!n.endsWith('.jpg')&&!n.endsWith('.jpeg')){errEl.textContent='❌ 只接受 JPG 格式';errEl.style.display='block';return;}
+  if(file.size>1048576){errEl.textContent='❌ 檔案 '+(file.size/1048576).toFixed(2)+'MB，超過 1MB';errEl.style.display='block';return;}
   var r=new FileReader();
-  r.onload=function(ev){ pendingImgs[p]=ev.target.result; preEl.innerHTML='<img class="upload-preview-img" src="'+pendingImgs[p]+'"><div class="upload-fname">✓ '+escH(file.name)+' （'+(file.size/1024).toFixed(0)+' KB）</div><button class="upload-rm" onclick="removeImg(\''+p+'\')">移除</button>'; };
+  r.onload=function(ev){pendingImgs[p]=ev.target.result;preEl.innerHTML='<img class="upload-preview-img" src="'+pendingImgs[p]+'"><div class="upload-fname">✓ '+escH(file.name)+' （'+(file.size/1024).toFixed(0)+' KB）</div><button class="upload-rm" onclick="removeImg(\''+p+'\')">移除</button>';};
   r.readAsDataURL(file);
 }
-function removeImg(p){ delete pendingImgs[p]; document.getElementById(p+'-preview').innerHTML=''; document.getElementById(p+'-err').style.display='none'; document.getElementById(p+'-file').value=''; }
+function removeImg(p){delete pendingImgs[p];document.getElementById(p+'-preview').innerHTML='';document.getElementById(p+'-err').style.display='none';document.getElementById(p+'-file').value='';}
 
-// ══ 總覽 ════════════════════════════
+// ── 總覽 ──
 var COLORS=['#1A4FD6','#1E6E3A','#8B5E00','#B0231A','#6B35B5','#1A7F8B','#C45200','#0D6E8B'];
-function renderDashboard() {
+function renderDashboard(){
   document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
   document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
   document.getElementById('s-total').textContent=db.posters.length;
@@ -623,27 +557,25 @@ function renderDashboard() {
   document.getElementById('s-pending').textContent=db.posters.filter(function(p){return p.status==='submitted';}).length;
   document.getElementById('s-rejected').textContent=db.posters.filter(function(p){return p.status==='rejected';}).length;
   var members=db.members&&db.members.length?db.members:['（無組員）'];
-  var counts={};
-  members.forEach(function(m){ counts[m]=0; });
-  db.posters.forEach(function(p){ if(p.status==='approved') return; if(p.assignee&&counts[p.assignee]!==undefined) counts[p.assignee]++; });
+  var counts={};members.forEach(function(m){counts[m]=0;});
+  db.posters.forEach(function(p){if(p.status==='approved')return;if(p.assignee&&counts[p.assignee]!==undefined)counts[p.assignee]++;});
   var max=Math.max(1,Math.max.apply(null,members.map(function(m){return counts[m];})));
   document.getElementById('workload-list').innerHTML=members.map(function(m,i){
-    var c=counts[m]||0, pct=Math.round((c/max)*100);
-    var barCls=c>=3?'full':c>=2?'busy':'';
+    var c=counts[m]||0,pct=Math.round((c/max)*100);
+    var bc=c>=3?'full':c>=2?'busy':'';
     var col=COLORS[i%COLORS.length];
     return '<div class="wl-row"><div class="wl-avatar" style="background:'+col+'22;color:'+col+'">'+escH(m.slice(0,1))+'</div>'+
       '<div class="wl-name">'+escH(m)+'</div>'+
-      '<div class="wl-bar-wrap"><div class="wl-bar-fill '+barCls+'" style="width:'+pct+'%"></div></div>'+
+      '<div class="wl-bar-wrap"><div class="wl-bar-fill '+bc+'" style="width:'+pct+'%"></div></div>'+
       '<div class="wl-count'+(c>0?' has-work':'')+'">'+c+'</div></div>';
   }).join('');
   var el=document.getElementById('poster-list');
-  if(!db.posters.length){ el.innerHTML='<div class="empty"><div class="empty-emoji">📋</div><h3>尚無海報</h3><p>前往「分派」頁面建立第一份海報</p></div>'; return; }
+  if(!db.posters.length){el.innerHTML='<div class="empty"><div class="empty-emoji">📋</div><h3>尚無海報</h3><p>前往「分派」或「提交」頁面新增海報</p></div>';return;}
   el.innerHTML=db.posters.map(posterCard).join('');
 }
-
-function slabel(s){ return {draft:'製作中',submitted:'待審核',approved:'已通過',rejected:'需修改'}[s]||s; }
-function pcol(prog,status){ if(status==='approved') return 'pf-green'; if(status==='rejected') return 'pf-red'; return prog>=100?'pf-blue':'pf-amber'; }
-function posterCard(p) {
+function slabel(s){return{draft:'製作中',submitted:'待審核',approved:'已通過',rejected:'需修改'}[s]||s;}
+function pcol(prog,status){if(status==='approved')return'pf-green';if(status==='rejected')return'pf-red';return prog>=100?'pf-blue':'pf-amber';}
+function posterCard(p){
   var thumb=p.image?'<img class="pc-thumb" src="'+p.image+'" alt="" onclick="openLB('+p.id+')">'
     :'<div class="pc-thumb-ph">🖼</div>';
   var rn=(p.status==='rejected'&&p.reviewNote)?'<div class="reject-note">💬 '+escH(p.reviewNote)+'</div>':'';
@@ -656,14 +588,14 @@ function posterCard(p) {
     '<div class="prog-bar"><div class="prog-fill '+pcol(p.progress,p.status)+'" style="width:'+p.progress+'%"></div></div>'+
     '<div class="prog-label">'+p.progress+'%'+(p.note?' · '+escH(p.note.slice(0,30)):'')+'</div>'+rn+'</div></div>';
 }
-async function deletePoster(id) {
-  if(!confirm('確定刪除？')) return;
+async function deletePoster(id){
+  if(!confirm('確定刪除？'))return;
   db.posters=db.posters.filter(function(p){return p.id!==id;});
-  await gsSave(); renderDashboard(); toast('已刪除');
+  await gsSave();renderDashboard();toast('已刪除');
 }
 
-// ══ 分派任務 ════════════════════════
-async function assignPoster() {
+// ── 分派任務 ──
+async function assignPoster(){
   var name=document.getElementById('asgn-name').value.trim();
   var assignee=document.getElementById('asgn-assignee').value;
   if(!name){toast('請填寫海報名稱');return;}
@@ -677,87 +609,93 @@ async function assignPoster() {
   db.posters.push(poster);
   var ok=await gsSave();
   document.getElementById('asgn-loading').style.display='none';
-  if(ok){
-    await chatNotify('📋 *新任務分派*\n\n海報名稱：'+name+'\n負責組員：'+assignee+'\n狀態：'+slabel(poster.status));
-    clearAssign(); toast('任務已建立並分派給 '+assignee); go('dashboard');
-  } else toast('建立成功（本機），雲端同步失敗');
+  if(ok){await chatNotify('📋 *新任務分派*\n\n海報：'+name+'\n負責：'+assignee);clearAssign();toast('已建立並分派給 '+assignee);go('dashboard');}
+  else{toast('建立成功（本機），雲端同步失敗，請稍後點↻同步');}
 }
-function clearAssign(){
-  ['asgn-name','asgn-note'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('asgn-progress').value=0;
-  document.getElementById('asgn-assignee').value='';
-  document.getElementById('asgn-status').value='draft';
-  removeImg('asgn');
-}
+function clearAssign(){['asgn-name','asgn-note'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('asgn-progress').value=0;document.getElementById('asgn-assignee').value='';document.getElementById('asgn-status').value='draft';removeImg('asgn');}
 
-// ══ 提交海報（組員） ════════════════
-function renderSubmitPage() {
-  var sel=document.getElementById('sub-poster'); if(!sel) return;
-  var cur=sel.value; sel.innerHTML='<option value="">— 選擇海報 —</option>';
+// ── 提交海報 ──
+function switchSubmitMode(mode,btn){
+  submitMode=mode;
+  document.querySelectorAll('#page-submit .tab-btn').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('sub-mode-update').style.display=mode==='update'?'block':'none';
+  document.getElementById('sub-mode-new').style.display=mode==='new'?'block':'none';
+  if(mode==='new')fillSelect('subn-assignee','— 選擇你的名字 —');
+}
+function renderSubmitPage(){
+  // 更新已分配：列出未通過的海報
+  var sel=document.getElementById('sub-poster');if(!sel)return;
+  var cur=sel.value;sel.innerHTML='<option value="">— 選擇海報 —</option>';
   db.posters.filter(function(p){return p.status!=='approved';}).forEach(function(p){
     var o=document.createElement('option');
     o.value=p.id;
     o.textContent=(p.assignee?'['+p.assignee+'] ':'')+p.name;
     sel.appendChild(o);
   });
-  if(cur) sel.value=cur;
+  if(cur)sel.value=cur;
   onSubPosterChange();
+  // 自行上傳：填充組員選單
+  fillSelect('subn-assignee','— 選擇你的名字 —');
 }
-function onSubPosterChange() {
+function onSubPosterChange(){
   var sel=document.getElementById('sub-poster');
   var info=document.getElementById('sub-current-info');
-  if(!sel||!info) return;
+  if(!sel||!info)return;
   var id=parseInt(sel.value);
   var p=db.posters.find(function(x){return x.id===id;});
   if(p){
     info.style.display='block';
-    info.innerHTML='目前狀態：<b>'+slabel(p.status)+'</b>　製作進度：<b>'+p.progress+'%</b>'+(p.reviewNote?'<br>上次意見：'+escH(p.reviewNote):'');
+    info.innerHTML='狀態：<b>'+slabel(p.status)+'</b>　進度：<b>'+p.progress+'%</b>'+(p.reviewNote?'<br>修改意見：<span style="color:var(--red)">'+escH(p.reviewNote)+'</span>':'');
     document.getElementById('sub-progress').value=p.progress;
-    document.getElementById('sub-status').value=p.status==='approved'?'submitted':p.status;
-    if(p.note) document.getElementById('sub-note').value=p.note;
-  } else {
-    info.style.display='none';
-  }
+    document.getElementById('sub-status').value=(p.status==='approved'||p.status==='submitted')?'submitted':p.status;
+    if(p.note)document.getElementById('sub-note').value=p.note;
+  }else{info.style.display='none';}
 }
-async function submitUpdate() {
-  var selEl=document.getElementById('sub-poster');
-  var id=parseInt(selEl.value);
-  if(!id){toast('請選擇要更新的海報');return;}
+async function submitUpdate(){
+  var id=parseInt(document.getElementById('sub-poster').value);
+  if(!id){toast('請選擇海報');return;}
   var p=db.posters.find(function(x){return x.id===id;});
   if(!p){toast('找不到海報');return;}
   var newStatus=document.getElementById('sub-status').value;
   var newProgress=Math.min(100,Math.max(0,parseInt(document.getElementById('sub-progress').value)||0));
-  var newNote=document.getElementById('sub-note').value.trim();
-  if(newStatus==='submitted'&&!p.image&&!pendingImgs['sub']){toast('提交審核前請先上傳海報圖片');return;}
+  if(newStatus==='submitted'&&!p.image&&!pendingImgs['sub']){toast('提交審核前請先上傳圖片');return;}
   document.getElementById('sub-loading').style.display='block';
-  p.progress=newProgress;
-  p.status=newStatus;
-  if(newNote) p.note=newNote;
-  if(pendingImgs['sub']) p.image=pendingImgs['sub'];
-  // 如果重新提交，清除舊的審核記錄
-  if(newStatus==='submitted'){ p.reviewNote=''; p.reviewedBy=''; p.reviewedAt=''; }
+  p.progress=newProgress;p.status=newStatus;
+  var n=document.getElementById('sub-note').value.trim();if(n)p.note=n;
+  if(pendingImgs['sub'])p.image=pendingImgs['sub'];
+  if(newStatus==='submitted'){p.reviewNote='';p.reviewedBy='';p.reviewedAt='';}
   var ok=await gsSave();
   document.getElementById('sub-loading').style.display='none';
-  if(ok){
-    if(newStatus==='submitted') await chatNotify('📤 *海報提交審核*\n\n海報名稱：'+p.name+'\n負責組員：'+(p.assignee||'─')+'\n製作進度：'+newProgress+'%\n\n請前往審核海報。');
-    clearSubmit(); toast(newStatus==='submitted'?'已提交待審核！':'進度已更新'); go('dashboard');
-  } else toast('已更新本機，雲端同步失敗');
+  if(ok){if(newStatus==='submitted')await chatNotify('📤 *海報提交審核*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+'\n進度：'+newProgress+'%');clearSubmitUpdate();toast(newStatus==='submitted'?'已提交待審核！':'進度已更新');go('dashboard');}
+  else toast('已更新本機，雲端同步失敗，請稍後點↻同步');
 }
-function clearSubmit(){
-  document.getElementById('sub-poster').value='';
-  document.getElementById('sub-progress').value=100;
-  document.getElementById('sub-status').value='draft';
-  document.getElementById('sub-note').value='';
-  document.getElementById('sub-current-info').style.display='none';
-  removeImg('sub');
-}
+function clearSubmitUpdate(){document.getElementById('sub-poster').value='';document.getElementById('sub-progress').value=100;document.getElementById('sub-status').value='draft';document.getElementById('sub-note').value='';document.getElementById('sub-current-info').style.display='none';removeImg('sub');}
 
-// ══ 審核 ════════════════════════════
-function filterReview(f,btn){ reviewFilter=f; document.querySelectorAll('.tab-btn').forEach(function(t){t.classList.remove('active');}); btn.classList.add('active'); renderReview(); }
-function renderReview() {
+async function submitNew(){
+  var name=document.getElementById('subn-name').value.trim();
+  if(!name){toast('請填寫海報名稱');return;}
+  if(!pendingImgs['subn']){toast('請上傳海報圖片');return;}
+  var assignee=document.getElementById('subn-assignee').value;
+  var progress=Math.min(100,Math.max(0,parseInt(document.getElementById('subn-progress').value)||100));
+  var note=document.getElementById('subn-note').value.trim();
+  document.getElementById('subn-loading').style.display='block';
+  var poster={id:Date.now(),name:name,assignee:assignee,group:'',progress:progress,note:note,
+    members:assignee?[assignee]:[],status:'submitted',reviewNote:'',reviewedBy:'',reviewedAt:'',image:pendingImgs['subn']};
+  db.posters.push(poster);
+  var ok=await gsSave();
+  document.getElementById('subn-loading').style.display='none';
+  if(ok){await chatNotify('📤 *新海報提交審核*\n\n海報：'+name+(assignee?'\n上傳者：'+assignee:'')+'\n\n請前往審核。');clearSubmitNew();toast('海報已提交審核！');go('dashboard');}
+  else toast('已新增本機，雲端同步失敗，請稍後點↻同步');
+}
+function clearSubmitNew(){document.getElementById('subn-name').value='';document.getElementById('subn-assignee').value='';document.getElementById('subn-progress').value=100;document.getElementById('subn-note').value='';removeImg('subn');}
+
+// ── 審核 ──
+function filterReview(f,btn){reviewFilter=f;document.querySelectorAll('#page-review .tab-btn').forEach(function(t){t.classList.remove('active');});btn.classList.add('active');renderReview();}
+function renderReview(){
   var list=reviewFilter==='submitted'?db.posters.filter(function(p){return p.status==='submitted';}):db.posters;
   var el=document.getElementById('review-list');
-  if(!list.length){ el.innerHTML='<div class="empty"><div class="empty-emoji">✅</div><h3>沒有待審核的海報</h3><p>所有海報都已處理完畢</p></div>'; return; }
+  if(!list.length){el.innerHTML='<div class="empty"><div class="empty-emoji">✅</div><h3>沒有待審核的海報</h3><p>所有海報都已處理完畢</p></div>';return;}
   el.innerHTML=list.map(function(p){
     var imgH=p.image?'<img class="review-img" src="'+p.image+'" onclick="openLB('+p.id+')" alt="">':'<div style="font-size:12px;color:var(--hint);padding:10px 0">（無圖片）</div>';
     var canAct=p.status==='submitted';
@@ -768,49 +706,49 @@ function renderReview() {
       '<div><strong style="font-size:14px">'+escH(p.name)+'</strong><br>'+(p.assignee?'<span style="font-size:12px;color:var(--blue)">👤 '+escH(p.assignee)+'</span>':'')+'</div>'+
       '<span class="badge b-'+p.status+'">'+slabel(p.status)+'</span></div>'+
       '<div class="ri-body">'+imgH+
-      '<div style="display:flex;gap:20px;margin-bottom:10px"><div><div style="font-size:11px;color:var(--muted);font-family:Space Mono,monospace">進度</div><div style="font-size:14px;font-weight:700">'+p.progress+'%</div></div></div>'+
+      '<div style="display:flex;gap:20px;margin-bottom:8px"><div><div style="font-size:11px;color:var(--muted);font-family:Space Mono,monospace">進度</div><div style="font-size:14px;font-weight:700">'+p.progress+'%</div></div></div>'+
       (p.note?'<div style="font-size:13px;color:var(--muted);margin-bottom:6px">備註：'+escH(p.note)+'</div>':'')+
       (p.reviewNote?'<div class="reject-note">上次意見：'+escH(p.reviewNote)+'</div>':'')+
       actRow+'</div></div>';
   }).join('');
 }
-function openReviewAction(id,action) {
-  var p=db.posters.find(function(x){return x.id===id;}); if(!p) return;
+function openReviewAction(id,action){
+  var p=db.posters.find(function(x){return x.id===id;});if(!p)return;
   document.getElementById('sr-title').textContent=action==='approve'?'通過海報':'退回海報';
   var imgTag=p.image?'<img src="'+p.image+'" style="width:100%;max-height:200px;object-fit:contain;border-radius:10px;border:1px solid var(--border);margin-bottom:14px">':'';
   if(action==='approve'){
     document.getElementById('sr-content').innerHTML=imgTag+'<p style="font-size:14px;color:var(--muted)">確認通過「'+escH(p.name)+'」？</p>';
     document.getElementById('sr-actions').innerHTML='<button class="btn btn-success" style="flex:1" onclick="doApprove('+id+')">✓ 確認通過</button>';
-  } else {
+  }else{
     document.getElementById('sr-content').innerHTML=imgTag+'<div class="fg"><label class="fl">退回原因 * <span style="font-weight:400;color:var(--hint)">必填・組員可見</span></label><textarea class="ft" id="reject-note" placeholder="請說明需要修改的地方..."></textarea></div>';
     document.getElementById('sr-actions').innerHTML='<button class="btn btn-danger" style="flex:1" onclick="doReject('+id+')">送出退回</button>';
   }
   document.getElementById('sheet-review').classList.add('open');
 }
-async function doApprove(id) {
-  var p=db.posters.find(function(x){return x.id===id;}); if(!p) return;
-  p.status='approved'; p.reviewedBy=db.settings.reviewer||'審核委員'; p.reviewedAt=new Date().toLocaleDateString('zh-TW'); p.reviewNote='';
+async function doApprove(id){
+  var p=db.posters.find(function(x){return x.id===id;});if(!p)return;
+  p.status='approved';p.reviewedBy=db.settings.reviewer||'審核委員';p.reviewedAt=new Date().toLocaleDateString('zh-TW');p.reviewNote='';
   await gsSave();
-  await chatNotify('✅ *海報審核通過*\n\n海報名稱：'+p.name+'\n負責組員：'+(p.assignee||'─')+'\n審核委員：'+p.reviewedBy+'\n\n恭喜！海報已通過審核。');
-  closeSheet('sheet-review'); renderReview(); toast('已通過 ✓');
+  await chatNotify('✅ *海報審核通過*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+'\n審核：'+p.reviewedBy+'\n\n恭喜通過！');
+  closeSheet('sheet-review');renderReview();toast('已通過 ✓');
 }
-async function doReject(id) {
+async function doReject(id){
   var note=document.getElementById('reject-note').value.trim();
   if(!note){toast('請填寫退回原因');return;}
-  var p=db.posters.find(function(x){return x.id===id;}); if(!p) return;
-  p.status='rejected'; p.reviewNote=note; p.reviewedBy=db.settings.reviewer||'審核委員'; p.reviewedAt=new Date().toLocaleDateString('zh-TW');
+  var p=db.posters.find(function(x){return x.id===id;});if(!p)return;
+  p.status='rejected';p.reviewNote=note;p.reviewedBy=db.settings.reviewer||'審核委員';p.reviewedAt=new Date().toLocaleDateString('zh-TW');
   await gsSave();
-  await chatNotify('🔁 *海報需要修改*\n\n海報名稱：'+p.name+'\n負責組員：'+(p.assignee||'─')+'\n\n修改意見：\n'+note+'\n\n請修改後重新提交。');
-  closeSheet('sheet-review'); renderReview(); toast('已退回');
+  await chatNotify('🔁 *海報需要修改*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+'\n\n修改意見：\n'+note);
+  closeSheet('sheet-review');renderReview();toast('已退回');
 }
 
-// ══ 製作期程 ════════════════════════
-function renderSchedule() {
+// ── 製作期程 ──
+function renderSchedule(){
   var el=document.getElementById('schedule-list');
-  if(!db.schedules||!db.schedules.length){ el.innerHTML='<div class="empty"><div class="empty-emoji">📅</div><h3>尚無期程</h3></div>'; return; }
-  var today=new Date(); today.setHours(0,0,0,0);
+  if(!db.schedules||!db.schedules.length){el.innerHTML='<div class="empty"><div class="empty-emoji">📅</div><h3>尚無期程</h3></div>';return;}
+  var today=new Date();today.setHours(0,0,0,0);
   el.innerHTML=db.schedules.map(function(s){
-    var d=new Date(s.date); d.setHours(0,0,0,0);
+    var d=new Date(s.date);d.setHours(0,0,0,0);
     var diff=Math.round((d-today)/86400000);
     var cls=diff<0?'overdue':diff<=3?'soon':'ok';
     var lbl=diff<0?'已逾期 '+Math.abs(diff)+' 天':diff===0?'今天截止':diff<=3?'還有 '+diff+' 天':s.date;
@@ -821,60 +759,65 @@ function renderSchedule() {
       (s.note?'<div class="dl-row"><span class="dl-lbl">備註</span><span style="font-size:13px;color:var(--muted)">'+escH(s.note)+'</span></div>':'')+'</div></div>';
   }).join('');
 }
-function openScheduleAdd() {
-  fillSelect('sch-person','— 選擇組員（選填）—');
-  document.getElementById('sch-date').value=new Date().toISOString().split('T')[0];
-  document.getElementById('sheet-schedule').classList.add('open');
-}
-async function addSchedule() {
-  var name=document.getElementById('sch-name').value.trim(); if(!name){toast('請填寫名稱');return;}
-  if(!db.schedules) db.schedules=[];
+function openScheduleAdd(){fillSelect('sch-person','— 選擇組員（選填）—');document.getElementById('sch-date').value=new Date().toISOString().split('T')[0];document.getElementById('sheet-schedule').classList.add('open');}
+async function addSchedule(){
+  var name=document.getElementById('sch-name').value.trim();if(!name){toast('請填寫名稱');return;}
+  if(!db.schedules)db.schedules=[];
   db.schedules.push({id:Date.now(),name:name,person:document.getElementById('sch-person').value,date:document.getElementById('sch-date').value,note:document.getElementById('sch-note').value.trim()});
-  await gsSave();
-  ['sch-name','sch-note'].forEach(function(i){document.getElementById(i).value='';});
-  closeSheet('sheet-schedule'); renderSchedule(); toast('期程已新增');
+  await gsSave();['sch-name','sch-note'].forEach(function(i){document.getElementById(i).value='';});
+  closeSheet('sheet-schedule');renderSchedule();toast('期程已新增');
 }
-async function deleteSchedule(id) {
-  if(!confirm('刪除此期程？')) return;
+async function deleteSchedule(id){
+  if(!confirm('刪除此期程？'))return;
   db.schedules=db.schedules.filter(function(s){return s.id!==id;});
-  await gsSave(); renderSchedule(); toast('已刪除');
+  await gsSave();renderSchedule();toast('已刪除');
 }
 
-// ══ 設定操作 ════════════════════════
-function promptChat() {
-  var v=prompt('貼上 Google Chat Webhook 網址：',chatUrl||''); if(v===null) return;
-  chatUrl=v.trim(); saveLocal();
-  var tc=document.getElementById('tag-chat');
-  if(tc){tc.textContent=chatUrl?'已設定 ✓':'未設定';tc.className='cfg-tag'+(chatUrl?' set':'');}
-  if(chatUrl) toast('Chat 通知已設定 ✓');
+// ── 設定 ──
+function renderMemberEditor(){
+  var anyFocused=false;
+  document.querySelectorAll('.mem-input').forEach(function(el){if(document.activeElement===el)anyFocused=true;});
+  if(anyFocused)return;
+  var el=document.getElementById('member-editor');if(!el)return;
+  el.innerHTML=db.members.map(function(m,i){
+    return '<div class="mem-row"><span class="mem-num">'+(i+1)+'</span>'+
+      '<input type="text" class="mem-input" id="mem-'+i+'" value="'+escH(m)+'" placeholder="組員名稱">'+
+      '<button class="mem-del" onclick="deleteMemberRow('+i+')">×</button></div>';
+  }).join('');
 }
-async function saveSettings() {
-  // 直接讀取 DOM 值，避免被快取覆蓋
-  var evtVal = document.getElementById('cfg-event').value.trim();
-  var revVal = document.getElementById('cfg-reviewer').value.trim() || '審核委員';
-  db.settings.event = evtVal;
-  db.settings.reviewer = revVal;
-  var ok = await gsSave();
-  document.getElementById('tb-event').textContent = evtVal || '海報審核';
-  document.getElementById('ds-event').textContent = evtVal || '活動名稱未設定';
-  toast(ok ? '設定已儲存並同步 ✓' : '已儲存本機，雲端同步失敗');
+function addMemberRow(){db.members.push('');renderMemberEditor();var last=document.getElementById('mem-'+(db.members.length-1));if(last)last.focus();}
+function deleteMemberRow(i){if(db.members.length<=1){toast('至少需要 1 位組員');return;}db.members.splice(i,1);renderMemberEditor();}
+async function saveMemberList(){
+  var list=[];
+  document.querySelectorAll('.mem-input').forEach(function(el){var v=el.value.trim();if(v)list.push(v);});
+  if(!list.length){toast('請至少填寫一位組員');return;}
+  db.members=list;
+  var ok=await gsSave();
+  renderMemberEditor();
+  fillSelect('asgn-assignee','— 選擇負責組員 —');
+  toast(ok?'組員名單已儲存並同步 ✓':'已儲存本機，雲端同步失敗');
 }
-function clearLocalData() {
-  if(!confirm('清除本機快取？頁面將重新整理。')) return;
-  localStorage.removeItem('prs-db'); localStorage.removeItem('prs-chat');
-  toast('清除中...'); setTimeout(function(){location.reload();},800);
+function promptChat(){var v=prompt('貼上 Google Chat Webhook 網址：',chatUrl||'');if(v===null)return;chatUrl=v.trim();saveLocal();var tc=document.getElementById('tag-chat');if(tc){tc.textContent=chatUrl?'已設定 ✓':'未設定';tc.className='cfg-tag'+(chatUrl?' set':'');}if(chatUrl)toast('Chat 通知已設定 ✓');}
+async function saveSettings(){
+  db.settings.event=document.getElementById('cfg-event').value.trim();
+  db.settings.reviewer=document.getElementById('cfg-reviewer').value.trim()||'審核委員';
+  var ok=await gsSave();
+  document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
+  document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
+  toast(ok?'設定已儲存並同步 ✓':'已儲存本機，雲端同步失敗');
 }
+function clearLocalData(){if(!confirm('清除本機快取？頁面將重新整理。'))return;localStorage.removeItem('prs-db');localStorage.removeItem('prs-chat');toast('清除中...');setTimeout(function(){location.reload();},800);}
 
-// ══ Lightbox & 工具 ═════════════════
-function openLB(id){ var p=db.posters.find(function(x){return x.id==id;}); if(!p||!p.image) return; document.getElementById('lb-img').src=p.image; document.getElementById('lightbox').classList.add('open'); }
-function closeLB(){ document.getElementById('lightbox').classList.remove('open'); setTimeout(function(){document.getElementById('lb-img').src='';},300); }
-function closeSheet(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.sheet-overlay').forEach(function(el){ el.addEventListener('click',function(e){if(e.target===el) el.classList.remove('open');}); });
-function escH(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ── Lightbox & 工具 ──
+function openLB(id){var p=db.posters.find(function(x){return x.id==id;});if(!p||!p.image)return;document.getElementById('lb-img').src=p.image;document.getElementById('lightbox').classList.add('open');}
+function closeLB(){document.getElementById('lightbox').classList.remove('open');setTimeout(function(){document.getElementById('lb-img').src='';},300);}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.sheet-overlay').forEach(function(el){el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('open');});});
+function escH(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 var _tt;
-function toast(msg){ var t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(_tt); _tt=setTimeout(function(){t.classList.remove('show');},3200); }
+function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},3200);}
 
-// ══ 初始化 ══════════════════════════
+// ── 初始化 ──
 loadLocal();
 renderDashboard();
 renderMemberEditor();
@@ -882,7 +825,6 @@ document.getElementById('tb-event').textContent=db.settings.event||'海報審核
 document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
 document.getElementById('cfg-event').value=db.settings.event||'';
 document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';
-// 啟動時從雲端載入
 gsLoad().then(function(ok){
   if(ok){
     renderDashboard();
