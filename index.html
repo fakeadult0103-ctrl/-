@@ -432,12 +432,16 @@ async function cloudSave() {
   lsSave();
   setSyncState('syncing');
   try {
+    var ctrl2 = new AbortController();
+    var t2 = setTimeout(function(){ ctrl2.abort(); }, 20000);
     var res = await fetch(SCRIPT_URL, {
       method: 'POST',
       redirect: 'follow',
       headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify({ action: 'save', data: db })
+      body: JSON.stringify({ action: 'save', data: db }),
+      signal: ctrl2.signal
     });
+    clearTimeout(t2);
     var text = await res.text();
     var j = text.indexOf('{');
     if (j < 0) throw new Error('非 JSON');
@@ -458,7 +462,11 @@ async function cloudSave() {
 async function cloudLoad() {
   setSyncState('syncing');
   try {
-    var res = await fetch(SCRIPT_URL + '?action=load&t=' + Date.now(), { redirect:'follow' });
+    // 15 秒 timeout，避免網路問題卡死頁面
+    var controller = new AbortController();
+    var timer = setTimeout(function(){ controller.abort(); }, 15000);
+    var res = await fetch(SCRIPT_URL + '?action=load&t=' + Date.now(), { redirect:'follow', signal: controller.signal });
+    clearTimeout(timer);
     var text = await res.text();
     var j = text.indexOf('{');
     if (j < 0) throw new Error('非 JSON');
@@ -673,11 +681,7 @@ async function assignPoster() {
     db.posters.push(poster); lsSave();
     var ok=await cloudSave();
     loadEl.style.display='none'; btn.disabled=false;
-    await chatNotify('📋 *新任務分派*
-
-海報：'+name+'
-負責：'+assignee+'
-狀態：'+slabel(poster.status));
+    await chatNotify('📋 *新任務分派*\n\n海報：'+name+'\n負責：'+assignee+'\n狀態：'+slabel(poster.status));
     clearAssign();
     toast(ok?'已建立並分派給 '+assignee:'已建立（本機），雲端稍後同步');
     go('dashboard');
@@ -894,7 +898,23 @@ document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';
 renderMemberEditor();
 fillSelect('asgn-assignee','— 選擇組員 —');
 fillSelect('sub-assignee','— 選擇（可略過）—');
-cloudLoad().then(function(ok){if(ok){renderDashboard();document.getElementById('cfg-event').value=db.settings.event||'';document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';renderMemberEditor();}});
+// 雲端同步獨立執行，錯誤不影響頁面操作
+setTimeout(function() {
+  cloudLoad().then(function(ok) {
+    if (ok) {
+      renderDashboard();
+      var e1 = document.getElementById('cfg-event');
+      var e2 = document.getElementById('cfg-reviewer');
+      if (e1) e1.value = db.settings.event || '';
+      if (e2) e2.value = db.settings.reviewer || '';
+      renderMemberEditor();
+    }
+  }).catch(function(e) {
+    setSyncState('error');
+    updateSyncLabel('連線失敗，使用本機資料');
+    console.error('init cloudLoad error:', e);
+  });
+}, 100);
 </script>
 </body>
 </html>
