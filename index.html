@@ -126,6 +126,12 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 .empty h3{font-size:16px;font-weight:700;margin-bottom:6px}
 .empty p{font-size:13px;color:var(--muted)}
 .divider{height:1px;background:var(--border);margin:12px 0}
+.detail-section{background:white;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px}
+.detail-row{padding:11px 14px;border-bottom:1px solid var(--paper2);display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.detail-row:last-child{border-bottom:none}
+.detail-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-family:'Space Mono',monospace;flex-shrink:0;margin-top:2px}
+.detail-val{font-size:14px;font-weight:500;text-align:right;flex:1}
+.detail-note{padding:14px;font-size:15px;line-height:1.9;white-space:pre-wrap;color:var(--ink)}
 @media(min-width:640px){
   .bottom-nav{display:none}.scroll-area{padding-bottom:32px}.app{flex-direction:row}
   .ds{display:flex;flex-direction:column;width:220px;flex-shrink:0;background:var(--ink);color:var(--paper);min-height:100dvh;position:sticky;top:0;height:100dvh;overflow-y:auto}
@@ -224,42 +230,94 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
   <!-- 提交海報 -->
   <div class="page" id="page-submit">
     <div class="sh" style="margin-top:0">提交海報</div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">上傳後圖片會自動存到雲端，所有人都能看到</p>
-    <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="sub-name" placeholder="例：環境議題海報"></div>
-    <div class="fg">
-      <label class="fl">你的名字 <span style="font-weight:400;color:var(--hint)">（選填）</span></label>
-      <select class="fs" id="sub-assignee"><option value="">— 選擇（可略過）—</option></select>
+
+    <!-- 模式切換 tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" id="sub-tab-update" onclick="switchSubMode('update',this)">更新已分派海報</button>
+      <button class="tab-btn" id="sub-tab-new" onclick="switchSubMode('new',this)">自行上傳新海報</button>
     </div>
-    <div class="fr">
-      <div class="fg"><label class="fl">進度 %</label><input type="number" class="fi" id="sub-progress" min="0" max="100" value="100"></div>
-      <div class="fg"><label class="fl">狀態</label>
-        <select class="fs" id="sub-status">
-          <option value="submitted">提交待審核</option>
-          <option value="draft">製作中（暫存）</option>
+
+    <!-- 模式一：更新已分派 -->
+    <div id="sub-mode-update">
+      <div style="background:var(--blue-light);border:1px solid #b5d4f4;border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--blue);margin-bottom:14px">
+        選擇組長分配給你的海報，更新進度或提交審核
+      </div>
+      <div class="fg">
+        <label class="fl">選擇你負責的海報 *</label>
+        <select class="fs" id="sub-existing-poster" onchange="onExistingPosterChange()">
+          <option value="">— 選擇海報 —</option>
         </select>
       </div>
-    </div>
-    <div class="fg">
-      <label class="fl">海報圖片 * <span style="font-weight:400;color:var(--hint)">JPG・1MB 以下</span></label>
-      <div class="upload-zone" id="sub-zone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
-        <input type="file" accept=".jpg,.jpeg" id="sub-file" onchange="onFileChange(event)">
-        <div id="sub-upload-content">
+      <div id="sub-existing-info" style="display:none;background:var(--paper2);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted)"></div>
+      <div class="fr">
+        <div class="fg"><label class="fl">更新進度 %</label><input type="number" class="fi" id="sub-upd-progress" min="0" max="100" value="100"></div>
+        <div class="fg"><label class="fl">更新狀態</label>
+          <select class="fs" id="sub-upd-status">
+            <option value="submitted">提交待審核</option>
+            <option value="draft">製作中</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">更新圖片 <span style="font-weight:400;color:var(--hint)">JPG・1MB 以下（選填）</span></label>
+        <div class="upload-zone" id="sub-upd-zone" ondragover="onDragOverUpdSub(event)" ondragleave="onDragLeaveUpdSub(event)" ondrop="onDropUpdSub(event)">
+          <input type="file" accept=".jpg,.jpeg" id="sub-upd-file" onchange="onFileChangeUpdSub(event)">
           <div class="upload-icon">🖼️</div>
           <div class="upload-main">點擊選擇或拖曳圖片</div>
           <div class="upload-sub">JPG・1MB 以下・上傳後自動存雲端</div>
+          <div id="sub-upd-preview"></div>
+          <div id="sub-upd-err" class="upload-err" style="display:none"></div>
         </div>
-        <div id="sub-preview"></div>
-        <div id="sub-err" class="upload-err" style="display:none"></div>
+      </div>
+      <div class="fg"><label class="fl">備註 / 文案說明 <span style="font-weight:400;color:var(--hint)">（選填）</span></label><textarea class="ft" id="sub-upd-note" placeholder="說明製作狀況、修改內容、文案方向..."></textarea></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-primary" style="flex:1" id="sub-upd-btn" onclick="submitUpdate()">更新送出</button>
+        <button class="btn btn-ghost" onclick="clearSubUpdate()">清除</button>
+      </div>
+      <div id="sub-upd-loading" style="display:none;margin-top:12px;background:var(--blue-light);border-radius:var(--rs);padding:12px 14px;">
+        <div style="font-size:13px;color:var(--blue);font-weight:700" id="sub-upd-loading-text">⏳ 處理中...</div>
       </div>
     </div>
-    <div class="fg"><label class="fl">備註 <span style="font-weight:400;color:var(--hint)">（選填）</span></label><textarea class="ft" id="sub-note" placeholder="說明內容、設計方向..."></textarea></div>
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-primary" style="flex:1" id="sub-btn" onclick="submitPoster()">送出</button>
-      <button class="btn btn-ghost" onclick="clearSubmit()">清除</button>
-    </div>
-    <div id="sub-loading" style="display:none;margin-top:12px;background:var(--blue-light);border-radius:var(--rs);padding:12px 14px;">
-      <div style="font-size:13px;color:var(--blue);font-weight:700" id="sub-loading-text">⏳ 上傳圖片中...</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:4px">圖片正在上傳至雲端，請稍候</div>
+
+    <!-- 模式二：自行上傳新海報 -->
+    <div id="sub-mode-new" style="display:none">
+      <div style="background:var(--amber-light);border:1px solid #f5dfa0;border-radius:var(--rs);padding:10px 12px;font-size:13px;color:var(--amber);margin-bottom:14px">
+        自行建立新海報，不需要組長事先分配
+      </div>
+      <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="sub-name" placeholder="例：環境議題海報"></div>
+      <div class="fg">
+        <label class="fl">你的名字 <span style="font-weight:400;color:var(--hint)">（選填）</span></label>
+        <select class="fs" id="sub-assignee"><option value="">— 選擇（可略過）—</option></select>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">進度 %</label><input type="number" class="fi" id="sub-progress" min="0" max="100" value="100"></div>
+        <div class="fg"><label class="fl">狀態</label>
+          <select class="fs" id="sub-status">
+            <option value="submitted">提交待審核</option>
+            <option value="draft">製作中（暫存）</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label class="fl">海報圖片 * <span style="font-weight:400;color:var(--hint)">JPG・1MB 以下</span></label>
+        <div class="upload-zone" id="sub-zone" ondragover="onDragOver(event)" ondragleave="onDragLeave(event)" ondrop="onDrop(event)">
+          <input type="file" accept=".jpg,.jpeg" id="sub-file" onchange="onFileChange(event)">
+          <div class="upload-icon">🖼️</div>
+          <div class="upload-main">點擊選擇或拖曳圖片</div>
+          <div class="upload-sub">JPG・1MB 以下・上傳後自動存雲端</div>
+          <div id="sub-preview"></div>
+          <div id="sub-err" class="upload-err" style="display:none"></div>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">備註 / 文案說明 <span style="font-weight:400;color:var(--hint)">（選填）</span></label><textarea class="ft" id="sub-note" placeholder="說明內容、設計方向..."></textarea></div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button class="btn btn-primary" style="flex:1" id="sub-btn" onclick="submitPoster()">送出</button>
+        <button class="btn btn-ghost" onclick="clearSubmit()">清除</button>
+      </div>
+      <div id="sub-loading" style="display:none;margin-top:12px;background:var(--blue-light);border-radius:var(--rs);padding:12px 14px;">
+        <div style="font-size:13px;color:var(--blue);font-weight:700" id="sub-loading-text">⏳ 上傳圖片中...</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px">圖片正在上傳至雲端，請稍候</div>
+      </div>
     </div>
   </div>
 
@@ -367,7 +425,21 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
   </div>
 </div>
 
-<div class="lightbox" id="lightbox" onclick="closeLB()"><span class="lb-x">✕</span><img id="lb-img" src="" alt=""></div>
+<!-- 海報詳細資訊 sheet -->
+<div class="sheet-overlay" id="sheet-poster-detail">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div id="poster-detail-content"></div>
+    <div style="height:8px"></div>
+    <button class="btn btn-ghost btn-full" onclick="closeSheet('sheet-poster-detail')">關閉</button>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <span class="lb-x" onclick="closeLB()">✕</span>
+  <img id="lb-img" src="" alt="" onclick="closeLB()">
+  <a id="lb-download" href="" download="海報.jpg" style="position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:white;color:#0F0E0C;padding:10px 24px;border-radius:20px;font-size:14px;font-weight:700;text-decoration:none;font-family:inherit;display:flex;align-items:center;gap:6px" onclick="event.stopPropagation()">⬇ 儲存圖片</a>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -551,7 +623,7 @@ function go(name) {
 function renderPage() {
   if(currentPage==='dashboard') renderDashboard();
   else if(currentPage==='assign') fillSelect('asgn-assignee','— 選擇組員 —');
-  else if(currentPage==='submit') fillSelect('sub-assignee','— 選擇（可略過）—');
+  else if(currentPage==='submit') { fillSelect('sub-assignee','— 選擇（可略過）—'); renderSubUpdateList(); }
   else if(currentPage==='review') renderReview();
   else if(currentPage==='schedule') renderSchedule();
   else if(currentPage==='settings') { syncSettingsUI(); renderMemberEditor(); }
@@ -640,12 +712,12 @@ function posterCard(p) {
   var ph='<div class="pc-ph" style="'+(p.imageUrl?'display:none':'')+'">🖼</div>';
   var rn=(p.status==='rejected'&&p.reviewNote)?'<div class="reject-note">💬 '+escH(p.reviewNote)+'</div>':'';
   var who=p.assignee?'<div class="pc-who">👤 '+escH(p.assignee)+'</div>':'';
-  return '<div class="poster-card"><div class="pc-inner">'+
+  return '<div class="poster-card" onclick="openPosterDetail('+p.id+')" style="cursor:pointer"><div class="pc-inner">'+
     '<div class="pc-row"><div style="flex-shrink:0">'+thumb+ph+'</div>'+
     '<div class="pc-info"><div class="pc-name">'+escH(p.name)+'</div>'+who+
     '<div class="pc-sub">'+(p.reviewedBy?'審核：'+p.reviewedBy:'')+'</div></div>'+
     '<div class="pc-right"><span class="badge b-'+p.status+'">'+slabel(p.status)+'</span>'+
-    '<button class="btn btn-ghost btn-icon btn-sm" onclick="deletePoster('+p.id+')" style="font-size:13px;color:var(--muted)">✕</button></div></div>'+
+    '<button class="btn btn-ghost btn-icon btn-sm" onclick="event.stopPropagation();deletePoster('+p.id+')" style="font-size:13px;color:var(--muted)">✕</button></div></div>'+
     '<div class="prog"><div class="prog-fill '+pcol(p.progress,p.status)+'" style="width:'+p.progress+'%"></div></div>'+
     '<div class="prog-lbl">'+p.progress+'%'+(p.note?' · '+escH(p.note.slice(0,30)):'')+'</div>'+
     rn+'</div></div>';
@@ -699,6 +771,123 @@ function clearAssign(){
 }
 
 // ── 提交海報（圖片先傳 Drive）───────────────
+// ── 提交頁面模式切換 ──
+var subMode = 'update';
+var pendingUpdImgB64 = null;
+
+function switchSubMode(mode, btn) {
+  subMode = mode;
+  document.querySelectorAll('#page-submit .tab-btn').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('sub-mode-update').style.display = mode==='update'?'block':'none';
+  document.getElementById('sub-mode-new').style.display = mode==='new'?'block':'none';
+  if (mode==='update') renderSubUpdateList();
+}
+
+// 填充「更新已分派」的海報選單（排除已通過的）
+function renderSubUpdateList() {
+  var sel = document.getElementById('sub-existing-poster');
+  if (!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">— 選擇海報 —</option>';
+  db.posters.filter(function(p){ return p.status !== 'approved'; }).forEach(function(p) {
+    var o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = (p.assignee ? '['+p.assignee+'] ' : '') + p.name + ' (' + slabel(p.status) + ')';
+    sel.appendChild(o);
+  });
+  if (cur) sel.value = cur;
+  onExistingPosterChange();
+}
+
+function onExistingPosterChange() {
+  var sel = document.getElementById('sub-existing-poster');
+  var info = document.getElementById('sub-existing-info');
+  if (!sel || !info) return;
+  var id = parseInt(sel.value);
+  var p = db.posters.find(function(x){ return x.id === id; });
+  if (p) {
+    info.style.display = 'block';
+    var txt = '狀態：<b>' + slabel(p.status) + '</b>　進度：<b>' + p.progress + '%</b>';
+    if (p.assignee) txt += '　負責：<b>' + escH(p.assignee) + '</b>';
+    if (p.note) txt += '<br>目前備註：' + escH(p.note.slice(0, 60));
+    if (p.reviewNote) txt += '<br><span style="color:var(--red)">修改意見：' + escH(p.reviewNote) + '</span>';
+    info.innerHTML = txt;
+    document.getElementById('sub-upd-progress').value = p.progress;
+    document.getElementById('sub-upd-status').value = (p.status === 'rejected' || p.status === 'draft') ? 'submitted' : p.status;
+    if (p.note) document.getElementById('sub-upd-note').value = p.note;
+  } else {
+    info.style.display = 'none';
+  }
+}
+
+// 更新已分派海報的上傳函式
+function onDragOverUpdSub(e){ e.preventDefault(); document.getElementById('sub-upd-zone').classList.add('drag-over'); }
+function onDragLeaveUpdSub(e){ document.getElementById('sub-upd-zone').classList.remove('drag-over'); }
+function onDropUpdSub(e){ e.preventDefault(); document.getElementById('sub-upd-zone').classList.remove('drag-over'); if(e.dataTransfer.files[0]) handleFileUpdSub(e.dataTransfer.files[0]); }
+function onFileChangeUpdSub(e){ if(e.target.files[0]) handleFileUpdSub(e.target.files[0]); }
+function handleFileUpdSub(file) {
+  var err=document.getElementById('sub-upd-err'), pre=document.getElementById('sub-upd-preview');
+  err.style.display='none'; pre.innerHTML=''; pendingUpdImgB64=null;
+  var n=file.name.toLowerCase();
+  if(file.type!=='image/jpeg'&&!n.endsWith('.jpg')&&!n.endsWith('.jpeg')){err.textContent='❌ 只接受 JPG 格式';err.style.display='block';return;}
+  if(file.size>1048576){err.textContent='❌ 超過 1MB';err.style.display='block';return;}
+  var r=new FileReader();
+  r.onload=function(ev){
+    pendingUpdImgB64=ev.target.result;
+    pre.innerHTML='<img class="upload-preview-img" src="'+pendingUpdImgB64+'"><div class="upload-fname">✓ '+escH(file.name)+' （'+(file.size/1024).toFixed(0)+' KB）</div><button class="upload-rm" onclick="clearUpdSubImg()">移除</button>';
+  };
+  r.readAsDataURL(file);
+}
+function clearUpdSubImg(){ pendingUpdImgB64=null; document.getElementById('sub-upd-preview').innerHTML=''; document.getElementById('sub-upd-err').style.display='none'; document.getElementById('sub-upd-file').value=''; }
+
+// 更新已分派海報
+async function submitUpdate() {
+  var id = parseInt(document.getElementById('sub-existing-poster').value);
+  if (!id) { toast('請選擇要更新的海報'); return; }
+  var p = db.posters.find(function(x){ return x.id === id; });
+  if (!p) { toast('找不到該海報'); return; }
+  var newStatus = document.getElementById('sub-upd-status').value;
+  var newProgress = Math.min(100, Math.max(0, parseInt(document.getElementById('sub-upd-progress').value)||0));
+  var newNote = document.getElementById('sub-upd-note').value.trim();
+  if (newStatus === 'submitted' && !p.imageUrl && !pendingUpdImgB64) { toast('提交審核前請上傳圖片'); return; }
+  var btn = document.getElementById('sub-upd-btn');
+  var loadEl = document.getElementById('sub-upd-loading');
+  var loadTxt = document.getElementById('sub-upd-loading-text');
+  btn.disabled = true; loadEl.style.display = 'block';
+  try {
+    if (pendingUpdImgB64) {
+      loadTxt.textContent = '⏳ 上傳圖片中...';
+      p.imageUrl = await uploadImageToDrive(pendingUpdImgB64, 'poster_upd_'+Date.now()+'.jpg');
+    }
+    p.progress = newProgress;
+    p.status = newStatus;
+    if (newNote) p.note = newNote;
+    // 重新提交時清除舊審核記錄
+    if (newStatus === 'submitted') { p.reviewNote = ''; p.reviewedBy = ''; p.reviewedAt = ''; }
+    lsSave();
+    loadTxt.textContent = '⏳ 同步中...';
+    var ok = await cloudSave();
+    loadEl.style.display = 'none'; btn.disabled = false;
+    if (newStatus === 'submitted') await chatNotify('📤 *海報更新並提交審核*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+'\n進度：'+newProgress+'%\n\n請前往審核。');
+    clearSubUpdate();
+    toast(ok ? (newStatus==='submitted'?'已提交待審核 ✓':'進度已更新 ✓') : '已更新本機，雲端稍後同步');
+    go('dashboard');
+  } catch(e) {
+    loadEl.style.display = 'none'; btn.disabled = false;
+    toast('失敗：' + e.message);
+  }
+}
+
+function clearSubUpdate() {
+  document.getElementById('sub-existing-poster').value = '';
+  document.getElementById('sub-existing-info').style.display = 'none';
+  document.getElementById('sub-upd-progress').value = 100;
+  document.getElementById('sub-upd-status').value = 'submitted';
+  document.getElementById('sub-upd-note').value = '';
+  clearUpdSubImg();
+}
+
 async function submitPoster() {
   var name=document.getElementById('sub-name').value.trim();
   if(!name){toast('請填寫海報名稱');return;}
@@ -879,7 +1068,38 @@ function resetLocal(){
 }
 
 // ── Lightbox & 工具 ──────────────────────────
-function openLB(url){document.getElementById('lb-img').src=url;document.getElementById('lightbox').classList.add('open');}
+function openPosterDetail(id) {
+  var p = db.posters.find(function(x){return x.id==id;});
+  if (!p) return;
+  var smap = {draft:'製作中',submitted:'待審核',approved:'已通過',rejected:'需修改'};
+  var statusColor = {draft:'var(--muted)',submitted:'var(--amber)',approved:'var(--green)',rejected:'var(--red)'};
+  var imgHtml = p.imageUrl
+    ? '<div style="position:relative;margin-bottom:16px"><img src="'+escH(p.imageUrl)+'" style="width:100%;border-radius:var(--r);border:1px solid var(--border);object-fit:contain;max-height:320px;cursor:pointer" onclick="openLB(\'"+escH(p.imageUrl)+"\')" onerror="this.style.display=\'none\'">'+
+      '<a href="'+escH(p.imageUrl)+'" download="海報_'+escH(p.name)+'.jpg" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.65);color:white;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px" onclick="event.stopPropagation()">⬇ 儲存圖片</a></div>'
+    : '<div style="background:var(--paper2);border-radius:var(--r);padding:32px;text-align:center;font-size:32px;margin-bottom:16px">🖼<div style="font-size:13px;color:var(--hint);margin-top:8px">尚未上傳圖片</div></div>';
+  var html = imgHtml +
+    '<div style="background:var(--paper2);border-radius:var(--r);padding:14px;margin-bottom:12px">'+
+    '<div style="font-size:18px;font-weight:900;margin-bottom:8px">'+escH(p.name)+'</div>'+
+    (p.assignee?'<div style="font-size:13px;color:var(--blue);font-weight:500;margin-bottom:4px">👤 負責組員：'+escH(p.assignee)+'</div>':'')+
+    '<div style="display:inline-flex;align-items:center;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;font-family:Space Mono,monospace;background:'+statusColor[p.status]+'22;color:'+statusColor[p.status]+'">'+smap[p.status]+'</div>'+
+    '</div>'+
+    '<div style="background:white;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:12px">'+
+    '<div style="padding:10px 14px;border-bottom:1px solid var(--paper2);display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">製作進度</span><span style="font-size:14px;font-weight:700;font-family:Space Mono,monospace">'+p.progress+'%</span></div>'+
+    (p.assignee?'<div style="padding:10px 14px;border-bottom:1px solid var(--paper2);display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">指派組員</span><span style="font-size:14px;font-weight:500">'+escH(p.assignee)+'</span></div>':'')+
+    (p.reviewedBy?'<div style="padding:10px 14px;border-bottom:1px solid var(--paper2);display:flex;justify-content:space-between"><span style="font-size:12px;color:var(--muted)">審核委員</span><span style="font-size:14px;font-weight:500">'+escH(p.reviewedBy)+' · '+escH(p.reviewedAt)+'</span></div>':'')+
+    (p.note?'<div style="padding:12px 14px"><div style="font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;font-family:Space Mono,monospace">文案 / 備註說明</div><div style="font-size:15px;line-height:1.8;white-space:pre-wrap;color:var(--ink)">'+escH(p.note)+'</div></div>':'')+
+    (p.reviewNote?'<div style="padding:12px 14px;background:var(--red-light)"><div style="font-size:11px;color:var(--red);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;font-family:Space Mono,monospace">修改意見</div><div style="font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--red)">'+escH(p.reviewNote)+'</div></div>':'')+
+    '</div>';
+  document.getElementById('poster-detail-content').innerHTML = html;
+  document.getElementById('sheet-poster-detail').classList.add('open');
+}
+
+function openLB(url){
+  document.getElementById('lb-img').src=url;
+  var dl=document.getElementById('lb-download');
+  if(dl){dl.href=url;}
+  document.getElementById('lightbox').classList.add('open');
+}
 function closeLB(){document.getElementById('lightbox').classList.remove('open');setTimeout(function(){document.getElementById('lb-img').src='';},300);}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.sheet-overlay').forEach(function(el){el.addEventListener('click',function(e){if(e.target===el)el.classList.remove('open');});});
