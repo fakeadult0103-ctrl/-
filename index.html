@@ -200,12 +200,25 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
       <div class="fg"><label class="fl">進度 %</label><input type="number" class="fi" id="asgn-progress" min="0" max="100" value="0"></div>
       <div class="fg"><label class="fl">狀態</label><select class="fs" id="asgn-status"><option value="draft">製作中</option><option value="submitted">待審核</option></select></div>
     </div>
+    <div class="fg">
+      <label class="fl">海報圖片 <span style="font-weight:400;color:var(--hint)">JPG・1MB 以下（選填）</span></label>
+      <div class="upload-zone" id="asgn-zone" ondragover="onDragOverAsgn(event)" ondragleave="onDragLeaveAsgn(event)" ondrop="onDropAsgn(event)">
+        <input type="file" accept=".jpg,.jpeg" id="asgn-file" onchange="onFileChangeAsgn(event)">
+        <div class="upload-icon">🖼️</div>
+        <div class="upload-main">點擊選擇或拖曳圖片</div>
+        <div class="upload-sub">JPG・1MB 以下・上傳後自動存雲端</div>
+        <div id="asgn-preview"></div>
+        <div id="asgn-err" class="upload-err" style="display:none"></div>
+      </div>
+    </div>
     <div class="fg"><label class="fl">備註</label><textarea class="ft" id="asgn-note" placeholder="設計方向、注意事項..."></textarea></div>
     <div style="display:flex;gap:8px;margin-top:8px">
-      <button class="btn btn-primary" style="flex:1" onclick="assignPoster()">建立並分派</button>
+      <button class="btn btn-primary" style="flex:1" id="asgn-btn" onclick="assignPoster()">建立並分派</button>
       <button class="btn btn-ghost" onclick="clearAssign()">清除</button>
     </div>
-    <div id="asgn-loading" style="display:none;text-align:center;margin-top:12px;font-size:13px;color:var(--muted)">⏳ 處理中...</div>
+    <div id="asgn-loading" style="display:none;margin-top:12px;background:var(--blue-light);border-radius:var(--rs);padding:12px 14px;">
+      <div style="font-size:13px;color:var(--blue);font-weight:700" id="asgn-loading-text">⏳ 處理中...</div>
+    </div>
   </div>
 
   <!-- 提交海報 -->
@@ -365,6 +378,7 @@ var LS_CHAT = 'prs-chat';
 var db = { posters:[], schedules:[], settings:{ event:'', reviewer:'審核委員' }, members:['組員一','組員二','組員三','組員四','組員五','組員六'] };
 var chatUrl = '';
 var pendingImgB64 = null;
+var pendingAsgnImgB64 = null;
 var currentPage = 'dashboard';
 var reviewFilter = 'submitted';
 
@@ -536,6 +550,26 @@ function renderPage() {
 }
 
 // ── 圖片上傳處理 ─────────────────────────────
+function onDragOverAsgn(e){ e.preventDefault(); document.getElementById('asgn-zone').classList.add('drag-over'); }
+function onDragLeaveAsgn(e){ document.getElementById('asgn-zone').classList.remove('drag-over'); }
+function onDropAsgn(e){ e.preventDefault(); document.getElementById('asgn-zone').classList.remove('drag-over'); if(e.dataTransfer.files[0]) handleFileAsgn(e.dataTransfer.files[0]); }
+function onFileChangeAsgn(e){ if(e.target.files[0]) handleFileAsgn(e.target.files[0]); }
+function handleFileAsgn(file) {
+  var err=document.getElementById('asgn-err'), pre=document.getElementById('asgn-preview');
+  err.style.display='none'; pre.innerHTML=''; pendingAsgnImgB64=null;
+  var n=file.name.toLowerCase();
+  if(file.type!=='image/jpeg'&&!n.endsWith('.jpg')&&!n.endsWith('.jpeg')){err.textContent='❌ 只接受 JPG 格式';err.style.display='block';return;}
+  if(file.size>1048576){err.textContent='❌ 檔案 '+(file.size/1048576).toFixed(2)+'MB，超過 1MB';err.style.display='block';return;}
+  var r=new FileReader();
+  r.onload=function(ev){
+    pendingAsgnImgB64=ev.target.result;
+    pre.innerHTML='<img class="upload-preview-img" src="'+pendingAsgnImgB64+'">'+
+      '<div class="upload-fname">✓ '+file.name+' （'+(file.size/1024).toFixed(0)+' KB）</div>'+
+      '<button class="upload-rm" onclick="clearAsgnImg()">移除</button>';
+  };
+  r.readAsDataURL(file);
+}
+function clearAsgnImg(){ pendingAsgnImgB64=null; document.getElementById('asgn-preview').innerHTML=''; document.getElementById('asgn-err').style.display='none'; document.getElementById('asgn-file').value=''; }
 function onDragOver(e){ e.preventDefault(); document.getElementById('sub-zone').classList.add('drag-over'); }
 function onDragLeave(e){ document.getElementById('sub-zone').classList.remove('drag-over'); }
 function onDrop(e){ e.preventDefault(); document.getElementById('sub-zone').classList.remove('drag-over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); }
@@ -620,25 +654,44 @@ async function assignPoster() {
   var assignee=document.getElementById('asgn-assignee').value;
   if(!name){toast('請填寫海報名稱');return;}
   if(!assignee){toast('請選擇負責組員');return;}
-  var poster={id:Date.now(),name:name,assignee:assignee,
-    progress:Math.min(100,Math.max(0,parseInt(document.getElementById('asgn-progress').value)||0)),
-    note:document.getElementById('asgn-note').value.trim(),
-    members:[assignee],status:document.getElementById('asgn-status').value||'draft',
-    reviewNote:'',reviewedBy:'',reviewedAt:'',imageUrl:''};
-  document.getElementById('asgn-loading').style.display='block';
-  db.posters.push(poster); lsSave();
-  var ok=await cloudSave();
-  document.getElementById('asgn-loading').style.display='none';
-  await chatNotify('📋 *新任務分派*\n\n海報：'+name+'\n負責：'+assignee+'\n狀態：'+slabel(poster.status));
-  clearAssign();
-  toast(ok?'已建立並分派給 '+assignee:'已建立（本機），雲端稍後同步');
-  go('dashboard');
+  var btn=document.getElementById('asgn-btn');
+  var loadEl=document.getElementById('asgn-loading');
+  var loadTxt=document.getElementById('asgn-loading-text');
+  btn.disabled=true; loadEl.style.display='block';
+  var imageUrl='';
+  try {
+    if(pendingAsgnImgB64){
+      loadTxt.textContent='⏳ 上傳圖片中...';
+      imageUrl=await uploadImageToDrive(pendingAsgnImgB64,'poster_assign_'+Date.now()+'.jpg');
+    }
+    loadTxt.textContent='⏳ 儲存資料中...';
+    var poster={id:Date.now(),name:name,assignee:assignee,
+      progress:Math.min(100,Math.max(0,parseInt(document.getElementById('asgn-progress').value)||0)),
+      note:document.getElementById('asgn-note').value.trim(),
+      members:[assignee],status:document.getElementById('asgn-status').value||'draft',
+      reviewNote:'',reviewedBy:'',reviewedAt:'',imageUrl:imageUrl};
+    db.posters.push(poster); lsSave();
+    var ok=await cloudSave();
+    loadEl.style.display='none'; btn.disabled=false;
+    await chatNotify('📋 *新任務分派*
+
+海報：'+name+'
+負責：'+assignee+'
+狀態：'+slabel(poster.status));
+    clearAssign();
+    toast(ok?'已建立並分派給 '+assignee:'已建立（本機），雲端稍後同步');
+    go('dashboard');
+  } catch(e) {
+    loadEl.style.display='none'; btn.disabled=false;
+    toast('上傳失敗：'+e.message);
+  }
 }
 function clearAssign(){
   ['asgn-name','asgn-note'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('asgn-progress').value=0;
   document.getElementById('asgn-assignee').value='';
   document.getElementById('asgn-status').value='draft';
+  clearAsgnImg();
 }
 
 // ── 提交海報（圖片先傳 Drive）───────────────
