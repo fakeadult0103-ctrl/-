@@ -714,26 +714,54 @@ function switchMSubMode(mode, btn) {
 function renderMyPosters() {
   var el = document.getElementById('my-poster-list');
   if (!el) return;
-  // 組員看全部海報（不過濾，方便查看所有狀態）
   var list = db.posters;
   if (!list.length) {
     el.innerHTML = '<div class="empty"><div class="empty-emoji">📋</div><h3>目前沒有海報</h3><p>請等候組長分派，或自行上傳</p></div>';
     return;
   }
-  var scolor = {draft:'var(--muted)',submitted:'var(--amber)',approved:'var(--green)',rejected:'var(--red)'};
-  el.innerHTML = list.map(function(p) {
-    var img = p.imageUrl ? '<img class="mpc-img" src="'+escH(p.imageUrl)+'" onerror="this.style.display=&quot;none&quot;">' : '<div class="mpc-img-ph">🖼</div>';
-    var rn = (p.status==='rejected'&&p.reviewNote) ? '<div class="mpc-reject">💬 '+escH(p.reviewNote)+'</div>' : '';
-    var note = p.note ? '<div class="mpc-note">'+escH(p.note)+'</div>' : '';
+  // 排序：需修改 > 待審核 > 製作中 > 已通過
+  var order = {rejected:0,submitted:1,draft:2,approved:3};
+  var sorted = list.slice().sort(function(a,b){ return (order[a.status]||0)-(order[b.status]||0); });
+  el.innerHTML = sorted.map(function(p) {
+    var img = p.imageUrl
+      ? '<img class="mpc-img" src="'+escH(p.imageUrl)+'" onerror="this.remove()">'
+      : '<div class="mpc-img-ph">🖼</div>';
+
+    // 狀態標籤
+    var statusBg = {draft:'var(--paper2)',submitted:'var(--amber-light)',approved:'var(--green-light)',rejected:'var(--red-light)'};
+    var statusFg = {draft:'var(--muted)',submitted:'var(--amber)',approved:'var(--green)',rejected:'var(--red)'};
+    var statusBadge = '<span style="display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;background:'+statusBg[p.status]+';color:'+statusFg[p.status]+'">'+slabel(p.status)+'</span>';
+
+    // 審核委員資訊
+    var reviewInfo = '';
+    if (p.status==='approved' && p.reviewedBy) {
+      reviewInfo = '<div style="background:var(--green-light);border-left:3px solid var(--green);border-radius:var(--rs);padding:8px 12px;margin:0 14px 12px;font-size:13px;color:var(--green)">'+
+        '✅ <b>已通過審核</b>　審核委員：'+escH(p.reviewedBy)+
+        (p.reviewedAt?' · '+escH(p.reviewedAt):'')+
+        '</div>';
+    }
+    if (p.status==='rejected' && p.reviewNote) {
+      reviewInfo = '<div style="background:var(--red-light);border-left:3px solid var(--red);border-radius:var(--rs);padding:8px 12px;margin:0 14px 12px;font-size:13px;color:var(--red)">'+
+        '🔁 <b>需要修改</b>　'+escH(p.reviewedBy||'')+(p.reviewedAt?' · '+escH(p.reviewedAt):'')+
+        '<div style="margin-top:6px;font-weight:500;line-height:1.6">'+escH(p.reviewNote)+'</div>'+
+        '</div>';
+    }
+    if (p.status==='submitted') {
+      reviewInfo = '<div style="background:var(--amber-light);border-left:3px solid var(--amber);border-radius:var(--rs);padding:8px 12px;margin:0 14px 12px;font-size:13px;color:var(--amber)">'+
+        '⏳ 等候審核委員審核中...'+
+        '</div>';
+    }
+
     return '<div class="my-poster-card" onclick="openPosterDetail('+p.id+')">'+
       '<div class="mpc-head">'+img+
-      '<div class="mpc-info">'+
+      '<div class="mpc-info" style="min-width:0">'+
         '<div class="mpc-name">'+escH(p.name)+'</div>'+
-        (p.assignee?'<div style="font-size:11px;color:var(--blue);font-weight:500">👤 '+escH(p.assignee)+'</div>':'')+
-        '<div class="mpc-status" style="color:'+scolor[p.status]+'">'+slabel(p.status)+'　'+p.progress+'%</div>'+
+        (p.assignee?'<div style="font-size:11px;color:var(--blue);font-weight:500;margin-top:2px">👤 '+escH(p.assignee)+'</div>':'')+
+        '<div style="margin-top:6px">'+statusBadge+'</div>'+
       '</div></div>'+
-      '<div class="mpc-prog"><div class="mpc-prog-fill '+pcol(p.progress,p.status)+'" style="width:'+p.progress+'%"></div></div>'+
-      note + rn + '</div>';
+      '<div class="mpc-prog" style="margin-bottom:4px"><div class="mpc-prog-fill '+pcol(p.progress,p.status)+'" style="width:'+p.progress+'%"></div></div>'+
+      '<div style="font-size:11px;color:var(--muted);padding:0 14px 10px;font-family:Space Mono,monospace">'+p.progress+'%'+(p.note?' · '+escH(p.note.slice(0,25)):'')+'</div>'+
+      reviewInfo+'</div>';
   }).join('');
 }
 
@@ -1136,7 +1164,7 @@ function renderDashboard() {
 function slabel(s){return{draft:'製作中',submitted:'待審核',approved:'已通過',rejected:'需修改'}[s]||s;}
 function pcol(prog,status){if(status==='approved')return'pf-green';if(status==='rejected')return'pf-red';return prog>=100?'pf-blue':'pf-amber';}
 function posterCard(p) {
-  var thumb=p.imageUrl?'<img class="pc-thumb" src="'+escH(p.imageUrl)+'" alt="" onclick="openLB(\''+escH(p.imageUrl)+'\')" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'
+  var thumb=p.imageUrl?'<img class="pc-thumb" src="'+escH(p.imageUrl)+'" alt="" onclick="openLB(\''+escH(p.imageUrl)+'\')" onerror="this.remove()";this.nextElementSibling.style.display=\'flex\'">'
     :'';
   var ph='<div class="pc-ph" style="'+(p.imageUrl?'display:none':'')+'">🖼</div>';
   var rn=(p.status==='rejected'&&p.reviewNote)?'<div class="reject-note">💬 '+escH(p.reviewNote)+'</div>':'';
@@ -1517,7 +1545,7 @@ function openPosterDetail(id) {
   var smap = {draft:'製作中',submitted:'待審核',approved:'已通過',rejected:'需修改'};
   var statusColor = {draft:'var(--muted)',submitted:'var(--amber)',approved:'var(--green)',rejected:'var(--red)'};
   var imgHtml = p.imageUrl
-    ? '<div style="position:relative;margin-bottom:16px"><img src="'+escH(p.imageUrl)+'" style="width:100%;border-radius:var(--r);border:1px solid var(--border);object-fit:contain;max-height:320px;cursor:pointer" onclick="openLB(\'"+escH(p.imageUrl)+"\')" onerror="this.style.display=\'none\'">'+
+    ? '<div style="position:relative;margin-bottom:16px"><img src="'+escH(p.imageUrl)+'" style="width:100%;border-radius:var(--r);border:1px solid var(--border);object-fit:contain;max-height:320px;cursor:pointer" onclick="openLB(\'"+escH(p.imageUrl)+"\')" onerror="this.style.display=&quot;none&quot;">'+
       '<a href="'+escH(p.imageUrl)+'" download="海報_'+escH(p.name)+'.jpg" style="position:absolute;bottom:10px;right:10px;background:rgba(0,0,0,.65);color:white;padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;text-decoration:none;display:flex;align-items:center;gap:5px" onclick="event.stopPropagation()">⬇ 儲存圖片</a></div>'
     : '<div style="background:var(--paper2);border-radius:var(--r);padding:32px;text-align:center;font-size:32px;margin-bottom:16px">🖼<div style="font-size:13px;color:var(--hint);margin-top:8px">尚未上傳圖片</div></div>';
   var html = imgHtml +
