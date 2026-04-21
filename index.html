@@ -150,10 +150,178 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
   .sheet-overlay{align-items:center}
 }
 @media(max-width:639px){.ds{display:none}}
+
+/* ── 登入畫面 ── */
+.login-screen{position:fixed;inset:0;background:var(--ink);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
+.login-logo{font-size:32px;margin-bottom:8px}
+.login-title{font-size:20px;font-weight:900;color:var(--paper);letter-spacing:.04em;margin-bottom:4px}
+.login-sub{font-size:13px;color:var(--hint);margin-bottom:40px;font-family:'Space Mono',monospace}
+.role-btns{display:flex;flex-direction:column;gap:12px;width:100%;max-width:320px}
+.role-btn{padding:16px 20px;border-radius:var(--r);border:none;cursor:pointer;font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:700;transition:all .15s;text-align:left;display:flex;align-items:center;gap:14px}
+.role-btn-admin{background:#1e1e1c;color:var(--paper);border:1.5px solid #333}
+.role-btn-admin:hover{background:#2a2a28;border-color:#4E8FF5}
+.role-btn-member{background:var(--blue);color:white}
+.role-btn-member:hover{background:#1340b0}
+.role-icon{font-size:22px;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.role-icon-admin{background:#333}
+.role-icon-member{background:rgba(255,255,255,.2)}
+.role-desc{font-size:11px;font-weight:400;opacity:.7;margin-top:2px}
+
+.pin-screen{position:fixed;inset:0;background:var(--ink);z-index:9998;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
+.pin-screen.show{display:flex}
+.pin-title{font-size:18px;font-weight:900;color:var(--paper);margin-bottom:8px}
+.pin-sub{font-size:13px;color:var(--hint);margin-bottom:28px;text-align:center}
+.pin-input{background:#1e1e1c;border:1.5px solid #444;border-radius:var(--rs);color:var(--paper);font-size:20px;font-family:'Space Mono',monospace;text-align:center;padding:14px 20px;width:100%;max-width:280px;letter-spacing:.2em;-webkit-appearance:none;margin-bottom:14px}
+.pin-input:focus{outline:none;border-color:var(--blue)}
+.pin-err{font-size:13px;color:var(--red-light);margin-bottom:12px;min-height:20px}
+
+/* ── 組員介面 ── */
+.member-view{display:none}
+.member-view.active{display:flex;flex-direction:column;min-height:100dvh}
+.member-topbar{background:var(--ink);color:var(--paper);padding:0 16px;height:56px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:200}
+.member-topbar-title{font-size:14px;font-weight:700;letter-spacing:.04em;flex:1}
+.member-tabs{display:flex;background:var(--paper2);border-radius:var(--rs);padding:3px;margin-bottom:16px}
+.member-tab{flex:1;padding:10px;font-size:13px;font-weight:700;border:none;border-radius:6px;cursor:pointer;background:transparent;color:var(--muted);font-family:inherit;transition:all .15s}
+.member-tab.active{background:white;color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.my-poster-card{background:white;border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden;cursor:pointer}
+.mpc-head{padding:12px 14px;display:flex;align-items:center;gap:10px}
+.mpc-img{width:52px;height:52px;border-radius:8px;object-fit:cover;border:1px solid var(--border);flex-shrink:0}
+.mpc-img-ph{width:52px;height:52px;border-radius:8px;background:var(--paper2);border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;color:var(--hint)}
+.mpc-info{flex:1;min-width:0}
+.mpc-name{font-weight:700;font-size:14px;margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mpc-status{font-size:11px}
+.mpc-prog{height:4px;background:var(--paper2);border-radius:2px;overflow:hidden;margin:10px 14px 0}
+.mpc-prog-fill{height:100%;border-radius:2px}
+.mpc-note{padding:8px 14px 12px;font-size:12px;color:var(--muted);line-height:1.5}
+.mpc-reject{margin:0 14px 12px;font-size:12px;color:var(--red);background:var(--red-light);border-radius:var(--rs);padding:7px 10px;border-left:3px solid var(--red)}
 </style>
 </head>
 <body>
-<div class="app">
+
+<!-- ── 登入畫面 ── -->
+<div class="login-screen" id="login-screen">
+  <div class="login-logo">🖼️</div>
+  <div class="login-title">海報審核系統</div>
+  <div class="login-sub" id="login-event-name">載入中...</div>
+  <div class="role-btns">
+    <button class="role-btn role-btn-admin" onclick="selectRole('admin')">
+      <div class="role-icon role-icon-admin">⚙️</div>
+      <div>
+        <div>組長 / 管理員</div>
+        <div class="role-desc">分派任務、審核海報、系統管理</div>
+      </div>
+    </button>
+    <button class="role-btn role-btn-member" onclick="selectRole('member')">
+      <div class="role-icon role-icon-member">✏️</div>
+      <div>
+        <div>組員</div>
+        <div class="role-desc">查看任務、提交海報</div>
+      </div>
+    </button>
+  </div>
+</div>
+
+<!-- ── 管理員密碼輸入 ── -->
+<div class="pin-screen" id="pin-screen">
+  <div class="pin-title">🔐 管理員登入</div>
+  <div class="pin-sub">請輸入管理員密碼</div>
+  <input type="password" class="pin-input" id="pin-input" placeholder="••••" onkeydown="if(event.key==='Enter')checkPin()">
+  <div class="pin-err" id="pin-err"></div>
+  <button class="btn btn-primary" style="width:100%;max-width:280px" onclick="checkPin()">進入</button>
+  <button class="btn btn-ghost" style="width:100%;max-width:280px;margin-top:8px;color:var(--hint);border-color:#333" onclick="backToLogin()">返回</button>
+</div>
+
+<!-- ── 組員介面 ── -->
+<div class="member-view" id="member-view">
+  <div class="member-topbar">
+    <div class="member-topbar-title" id="member-event-name">海報審核</div>
+    <div class="sync-dot" id="member-sync-dot" onclick="memberForceSync()"></div>
+    <button onclick="logout()" style="background:transparent;border:none;color:var(--hint);font-size:12px;cursor:pointer;font-family:inherit">登出</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:16px 16px calc(24px + env(safe-area-inset-bottom,0))">
+    <div class="member-tabs">
+      <button class="member-tab active" id="mtab-myposters" onclick="switchMemberTab('myposters',this)">我的海報</button>
+      <button class="member-tab" id="mtab-submit" onclick="switchMemberTab('submit',this)">提交海報</button>
+    </div>
+
+    <!-- 我的海報 -->
+    <div id="member-page-myposters">
+      <div id="my-poster-list"></div>
+    </div>
+
+    <!-- 提交海報（組員簡化版） -->
+    <div id="member-page-submit" style="display:none">
+      <div class="tabs">
+        <button class="tab-btn active" id="msub-tab-update" onclick="switchMSubMode('update',this)">更新已分派海報</button>
+        <button class="tab-btn" id="msub-tab-new" onclick="switchMSubMode('new',this)">自行上傳新海報</button>
+      </div>
+
+      <!-- 更新已分派 -->
+      <div id="msub-mode-update">
+        <div class="fg">
+          <label class="fl">選擇你負責的海報 *</label>
+          <select class="fs" id="msub-existing" onchange="onMSubExistingChange()"><option value="">— 選擇海報 —</option></select>
+        </div>
+        <div id="msub-existing-info" style="display:none;background:var(--paper2);border-radius:var(--rs);padding:10px 12px;margin-bottom:14px;font-size:13px;color:var(--muted)"></div>
+        <div class="fr">
+          <div class="fg"><label class="fl">進度 %</label><input type="number" class="fi" id="msub-upd-progress" min="0" max="100" value="100"></div>
+          <div class="fg"><label class="fl">狀態</label>
+            <select class="fs" id="msub-upd-status">
+              <option value="submitted">提交待審核</option>
+              <option value="draft">製作中</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">更新圖片 <span style="font-weight:400;color:var(--hint)">JPG・1MB（選填）</span></label>
+          <div class="upload-zone" id="msub-upd-zone" ondragover="onDragOverMUpd(event)" ondragleave="onDragLeaveMUpd(event)" ondrop="onDropMUpd(event)">
+            <input type="file" accept=".jpg,.jpeg" id="msub-upd-file" onchange="onFileChangeMUpd(event)">
+            <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳</div><div class="upload-sub">JPG・1MB 以下</div>
+            <div id="msub-upd-preview"></div><div id="msub-upd-err" class="upload-err" style="display:none"></div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">備註 / 文案說明</label><textarea class="ft" id="msub-upd-note" placeholder="說明製作狀況..."></textarea></div>
+        <button class="btn btn-primary btn-full" id="msub-upd-btn" onclick="mSubmitUpdate()">更新送出</button>
+        <div id="msub-upd-loading" style="display:none;margin-top:12px;background:var(--blue-light);border-radius:var(--rs);padding:12px 14px">
+          <div style="font-size:13px;color:var(--blue);font-weight:700" id="msub-upd-loading-text">⏳ 處理中...</div>
+        </div>
+      </div>
+
+      <!-- 自行上傳 -->
+      <div id="msub-mode-new" style="display:none">
+        <div class="fg"><label class="fl">海報名稱 *</label><input type="text" class="fi" id="msub-name" placeholder="例：環境議題海報"></div>
+        <div class="fg">
+          <label class="fl">你的名字 <span style="font-weight:400;color:var(--hint)">（選填）</span></label>
+          <select class="fs" id="msub-assignee"><option value="">— 選擇（可略過）—</option></select>
+        </div>
+        <div class="fr">
+          <div class="fg"><label class="fl">進度 %</label><input type="number" class="fi" id="msub-progress" min="0" max="100" value="100"></div>
+          <div class="fg"><label class="fl">狀態</label>
+            <select class="fs" id="msub-status">
+              <option value="submitted">提交待審核</option>
+              <option value="draft">製作中</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="fl">海報圖片 * <span style="font-weight:400;color:var(--hint)">JPG・1MB 以下</span></label>
+          <div class="upload-zone" id="msub-zone" ondragover="onDragOverMNew(event)" ondragleave="onDragLeaveMNew(event)" ondrop="onDropMNew(event)">
+            <input type="file" accept=".jpg,.jpeg" id="msub-file" onchange="onFileChangeMNew(event)">
+            <div class="upload-icon">🖼️</div><div class="upload-main">點擊選擇或拖曳</div><div class="upload-sub">JPG・1MB 以下</div>
+            <div id="msub-preview"></div><div id="msub-err" class="upload-err" style="display:none"></div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">備註 / 文案說明</label><textarea class="ft" id="msub-note" placeholder="說明內容、設計方向..."></textarea></div>
+        <button class="btn btn-primary btn-full" id="msub-new-btn" onclick="mSubmitNew()">送出</button>
+        <div id="msub-new-loading" style="display:none;margin-top:12px;background:var(--blue-light);border-radius:var(--rs);padding:12px 14px">
+          <div style="font-size:13px;color:var(--blue);font-weight:700" id="msub-new-loading-text">⏳ 處理中...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="admin-app" style="display:none">
 <div class="ds">
   <div class="ds-logo"><h2>海報審核系統</h2><p id="ds-event">載入中...</p></div>
   <div class="ds-nav">
@@ -361,6 +529,12 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
     </div>
     <div class="cfg-block">
       <div class="cfg-row">
+        <div style="flex-shrink:0"><div class="cfg-lbl">管理員密碼</div><div class="cfg-sub">預設：1234</div></div>
+        <input type="password" class="cfg-inp" id="cfg-admin-pin" placeholder="輸入新密碼">
+      </div>
+    </div>
+    <div class="cfg-block">
+      <div class="cfg-row">
         <div style="flex:1"><div class="cfg-lbl">雲端同步 + 圖片</div><div class="cfg-sub">Google Sheets + Drive 自動連線</div></div>
         <span class="cfg-tag set">已內建 ✓</span>
       </div>
@@ -443,6 +617,261 @@ body{font-family:'Noto Sans TC',sans-serif;background:var(--paper);color:var(--i
 <div class="toast" id="toast"></div>
 
 <script>
+// ════════════════════════════════════
+// 角色管理
+// ════════════════════════════════════
+var currentRole = null; // 'admin' | 'member'
+var DEFAULT_PIN = '1234'; // 預設密碼，可在設定中修改
+
+function initLogin() {
+  // 讀取活動名稱顯示在登入畫面
+  var evName = db.settings.event || '海報審核系統';
+  var el = document.getElementById('login-event-name');
+  if (el) el.textContent = evName;
+}
+
+function selectRole(role) {
+  if (role === 'admin') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('pin-screen').classList.add('show');
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-err').textContent = '';
+    setTimeout(function(){ document.getElementById('pin-input').focus(); }, 300);
+  } else {
+    enterMemberMode();
+  }
+}
+
+function checkPin() {
+  var pin = document.getElementById('pin-input').value;
+  var correctPin = db.settings.adminPin || DEFAULT_PIN;
+  if (pin === correctPin) {
+    document.getElementById('pin-screen').classList.remove('show');
+    enterAdminMode();
+  } else {
+    document.getElementById('pin-err').textContent = '密碼錯誤，請再試一次';
+    document.getElementById('pin-input').value = '';
+    document.getElementById('pin-input').focus();
+  }
+}
+
+function backToLogin() {
+  document.getElementById('pin-screen').classList.remove('show');
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function enterAdminMode() {
+  currentRole = 'admin';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('member-view').classList.remove('active');
+  document.getElementById('admin-app').style.display = 'flex';
+  initAdminUI();
+}
+
+function enterMemberMode() {
+  currentRole = 'member';
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('admin-app').style.display = 'none';
+  document.getElementById('member-view').classList.add('active');
+  document.getElementById('member-event-name').textContent = db.settings.event || '海報審核';
+  fillSelect('msub-assignee', '— 選擇（可略過）—');
+  renderMyPosters();
+  renderMSubUpdateList();
+}
+
+function logout() {
+  currentRole = null;
+  document.getElementById('member-view').classList.remove('active');
+  document.getElementById('admin-app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  initLogin();
+}
+
+// ── 組員介面邏輯 ──────────────────────────────
+
+var memberSubMode = 'update';
+var pendingMUpdImg = null;
+var pendingMNewImg = null;
+var memberTab = 'myposters';
+
+function switchMemberTab(tab, btn) {
+  memberTab = tab;
+  document.querySelectorAll('.member-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('member-page-myposters').style.display = tab==='myposters' ? 'block' : 'none';
+  document.getElementById('member-page-submit').style.display = tab==='submit' ? 'block' : 'none';
+  if (tab==='submit') { renderMSubUpdateList(); fillSelect('msub-assignee','— 選擇（可略過）—'); }
+}
+
+function switchMSubMode(mode, btn) {
+  memberSubMode = mode;
+  document.querySelectorAll('#member-page-submit .tab-btn').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  document.getElementById('msub-mode-update').style.display = mode==='update'?'block':'none';
+  document.getElementById('msub-mode-new').style.display = mode==='new'?'block':'none';
+}
+
+function renderMyPosters() {
+  var el = document.getElementById('my-poster-list');
+  if (!el) return;
+  // 組員看全部海報（不過濾，方便查看所有狀態）
+  var list = db.posters;
+  if (!list.length) {
+    el.innerHTML = '<div class="empty"><div class="empty-emoji">📋</div><h3>目前沒有海報</h3><p>請等候組長分派，或自行上傳</p></div>';
+    return;
+  }
+  var scolor = {draft:'var(--muted)',submitted:'var(--amber)',approved:'var(--green)',rejected:'var(--red)'};
+  el.innerHTML = list.map(function(p) {
+    var img = p.imageUrl ? '<img class="mpc-img" src="'+escH(p.imageUrl)+'" onerror="this.style.display=&quot;none&quot;">' : '<div class="mpc-img-ph">🖼</div>';
+    var rn = (p.status==='rejected'&&p.reviewNote) ? '<div class="mpc-reject">💬 '+escH(p.reviewNote)+'</div>' : '';
+    var note = p.note ? '<div class="mpc-note">'+escH(p.note)+'</div>' : '';
+    return '<div class="my-poster-card" onclick="openPosterDetail('+p.id+')">'+
+      '<div class="mpc-head">'+img+
+      '<div class="mpc-info">'+
+        '<div class="mpc-name">'+escH(p.name)+'</div>'+
+        (p.assignee?'<div style="font-size:11px;color:var(--blue);font-weight:500">👤 '+escH(p.assignee)+'</div>':'')+
+        '<div class="mpc-status" style="color:'+scolor[p.status]+'">'+slabel(p.status)+'　'+p.progress+'%</div>'+
+      '</div></div>'+
+      '<div class="mpc-prog"><div class="mpc-prog-fill '+pcol(p.progress,p.status)+'" style="width:'+p.progress+'%"></div></div>'+
+      note + rn + '</div>';
+  }).join('');
+}
+
+function renderMSubUpdateList() {
+  var sel = document.getElementById('msub-existing'); if(!sel) return;
+  var cur = sel.value;
+  sel.innerHTML = '<option value="">— 選擇海報 —</option>';
+  db.posters.filter(function(p){return p.status !== 'approved';}).forEach(function(p){
+    var o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = (p.assignee?'['+p.assignee+'] ':'')+p.name+' ('+slabel(p.status)+')';
+    sel.appendChild(o);
+  });
+  if(cur) sel.value=cur;
+  onMSubExistingChange();
+}
+
+function onMSubExistingChange() {
+  var sel=document.getElementById('msub-existing');
+  var info=document.getElementById('msub-existing-info');
+  if(!sel||!info) return;
+  var id=parseInt(sel.value);
+  var p=db.posters.find(function(x){return x.id===id;});
+  if(p){
+    info.style.display='block';
+    var txt='狀態：<b>'+slabel(p.status)+'</b>　進度：<b>'+p.progress+'%</b>';
+    if(p.reviewNote) txt+='<br><span style="color:var(--red)">修改意見：'+escH(p.reviewNote)+'</span>';
+    info.innerHTML=txt;
+    document.getElementById('msub-upd-progress').value=p.progress;
+    document.getElementById('msub-upd-status').value=(p.status==='rejected'||p.status==='draft')?'submitted':p.status;
+    if(p.note) document.getElementById('msub-upd-note').value=p.note;
+  } else { info.style.display='none'; }
+}
+
+// 組員上傳函式（更新已分派）
+function onDragOverMUpd(e){e.preventDefault();document.getElementById('msub-upd-zone').classList.add('drag-over');}
+function onDragLeaveMUpd(e){document.getElementById('msub-upd-zone').classList.remove('drag-over');}
+function onDropMUpd(e){e.preventDefault();document.getElementById('msub-upd-zone').classList.remove('drag-over');if(e.dataTransfer.files[0])handleFileMUpd(e.dataTransfer.files[0]);}
+function onFileChangeMUpd(e){if(e.target.files[0])handleFileMUpd(e.target.files[0]);}
+function clearMUpdImg(){pendingMUpdImg=null;var el=document.getElementById('msub-upd-preview');if(el)el.innerHTML='';var fi=document.getElementById('msub-upd-file');if(fi)fi.value='';}
+function handleFileMUpd(file){
+  var err=document.getElementById('msub-upd-err'),pre=document.getElementById('msub-upd-preview');
+  err.style.display='none';pre.innerHTML='';pendingMUpdImg=null;
+  if(file.type!=='image/jpeg'&&!file.name.toLowerCase().endsWith('.jpg')){err.textContent='❌ 只接受 JPG';err.style.display='block';return;}
+  if(file.size>1048576){err.textContent='❌ 超過 1MB';err.style.display='block';return;}
+  var r=new FileReader();r.onload=function(ev){pendingMUpdImg=ev.target.result;pre.innerHTML='<img class="upload-preview-img" src="'+pendingMUpdImg+'"><div class="upload-fname">✓ '+escH(file.name)+'</div><button class="upload-rm" onclick="clearMUpdImg()">移除</button>';};r.readAsDataURL(file);
+}
+
+// 組員上傳函式（自行新增）
+function onDragOverMNew(e){e.preventDefault();document.getElementById('msub-zone').classList.add('drag-over');}
+function onDragLeaveMNew(e){document.getElementById('msub-zone').classList.remove('drag-over');}
+function onDropMNew(e){e.preventDefault();document.getElementById('msub-zone').classList.remove('drag-over');if(e.dataTransfer.files[0])handleFileMNew(e.dataTransfer.files[0]);}
+function onFileChangeMNew(e){if(e.target.files[0])handleFileMNew(e.target.files[0]);}
+function clearMNewImg(){pendingMNewImg=null;var el=document.getElementById('msub-preview');if(el)el.innerHTML='';var fi=document.getElementById('msub-file');if(fi)fi.value='';}
+function handleFileMNew(file){
+  var err=document.getElementById('msub-err'),pre=document.getElementById('msub-preview');
+  err.style.display='none';pre.innerHTML='';pendingMNewImg=null;
+  if(file.type!=='image/jpeg'&&!file.name.toLowerCase().endsWith('.jpg')){err.textContent='❌ 只接受 JPG';err.style.display='block';return;}
+  if(file.size>1048576){err.textContent='❌ 超過 1MB';err.style.display='block';return;}
+  var r=new FileReader();r.onload=function(ev){pendingMNewImg=ev.target.result;pre.innerHTML='<img class="upload-preview-img" src="'+pendingMNewImg+'"><div class="upload-fname">✓ '+escH(file.name)+'</div><button class="upload-rm" onclick="clearMNewImg()">移除</button>';};r.readAsDataURL(file);
+}
+
+// 組員：更新已分派海報
+async function mSubmitUpdate() {
+  var id=parseInt(document.getElementById('msub-existing').value);
+  if(!id){toast('請選擇海報');return;}
+  var p=db.posters.find(function(x){return x.id===id;});
+  if(!p){toast('找不到該海報');return;}
+  var newStatus=document.getElementById('msub-upd-status').value;
+  var newProgress=Math.min(100,Math.max(0,parseInt(document.getElementById('msub-upd-progress').value)||0));
+  var newNote=document.getElementById('msub-upd-note').value.trim();
+  if(newStatus==='submitted'&&!p.imageUrl&&!pendingMUpdImg){toast('提交審核前請上傳圖片');return;}
+  var btn=document.getElementById('msub-upd-btn'),loadEl=document.getElementById('msub-upd-loading'),loadTxt=document.getElementById('msub-upd-loading-text');
+  btn.disabled=true;loadEl.style.display='block';
+  try {
+    p.progress=newProgress;p.status=newStatus;
+    if(newNote)p.note=newNote;
+    if(newStatus==='submitted'){p.reviewNote='';p.reviewedBy='';p.reviewedAt='';}
+    lsSave();loadTxt.textContent='⏳ 同步資料中...';
+    var ok=await cloudSave();
+    if(pendingMUpdImg){
+      loadTxt.textContent='⏳ 上傳圖片中...';
+      try{p.imageUrl=await uploadImageToDrive(pendingMUpdImg,'poster_mupd_'+Date.now()+'.jpg');lsSave();await cloudSave();}catch(e2){toast('資料已同步，圖片上傳失敗');}
+    }
+    loadEl.style.display='none';btn.disabled=false;
+    if(newStatus==='submitted')await chatNotify('📤 *海報更新並提交審核*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+' 進度：'+newProgress+'%');
+    // 清除表單
+    document.getElementById('msub-existing').value='';document.getElementById('msub-existing-info').style.display='none';
+    document.getElementById('msub-upd-progress').value=100;document.getElementById('msub-upd-note').value='';
+    pendingMUpdImg=null;document.getElementById('msub-upd-preview').innerHTML='';
+    toast(ok?(newStatus==='submitted'?'已提交待審核 ✓':'進度已更新 ✓'):'已更新本機');
+    switchMemberTab('myposters',document.getElementById('mtab-myposters'));
+    renderMyPosters();
+  } catch(e){loadEl.style.display='none';btn.disabled=false;toast('失敗：'+e.message);}
+}
+
+// 組員：自行新增海報
+async function mSubmitNew() {
+  var name=document.getElementById('msub-name').value.trim();
+  if(!name){toast('請填寫海報名稱');return;}
+  var status=document.getElementById('msub-status').value;
+  if(status==='submitted'&&!pendingMNewImg){toast('提交審核前請上傳圖片');return;}
+  var btn=document.getElementById('msub-new-btn'),loadEl=document.getElementById('msub-new-loading'),loadTxt=document.getElementById('msub-new-loading-text');
+  btn.disabled=true;loadEl.style.display='block';
+  var assignee=document.getElementById('msub-assignee').value;
+  var pid=Date.now();
+  var poster={id:pid,name:name,assignee:assignee,
+    progress:Math.min(100,Math.max(0,parseInt(document.getElementById('msub-progress').value)||100)),
+    note:document.getElementById('msub-note').value.trim(),
+    members:assignee?[assignee]:[],status:status,
+    reviewNote:'',reviewedBy:'',reviewedAt:'',imageUrl:''};
+  db.posters.push(poster);lsSave();
+  loadTxt.textContent='⏳ 同步資料中...';
+  var ok=await cloudSave();
+  if(pendingMNewImg){
+    loadTxt.textContent='⏳ 上傳圖片中...';
+    try{var pp=db.posters.find(function(x){return x.id===pid;});if(pp){pp.imageUrl=await uploadImageToDrive(pendingMNewImg,'poster_mnew_'+pid+'.jpg');lsSave();await cloudSave();}}catch(e2){toast('資料已同步，圖片上傳失敗');}
+  }
+  loadEl.style.display='none';btn.disabled=false;
+    if(status==='submitted')await chatNotify('📤 *新海報提交審核*\n\n海報：'+name+(assignee?'\n上傳者：'+assignee:'')+' 請前往審核。');
+  // 清除
+  document.getElementById('msub-name').value='';document.getElementById('msub-assignee').value='';
+  document.getElementById('msub-progress').value=100;document.getElementById('msub-note').value='';
+  pendingMNewImg=null;document.getElementById('msub-preview').innerHTML='';
+  toast(ok?(status==='submitted'?'已提交待審核 ✓':'已暫存'):'已儲存本機');
+  switchMemberTab('myposters',document.getElementById('mtab-myposters'));
+  renderMyPosters();
+}
+
+function memberForceSync() {
+  setSyncState('syncing');
+  cloudLoad().then(function(ok){
+    renderMyPosters();renderMSubUpdateList();
+    document.getElementById('member-event-name').textContent=db.settings.event||'海報審核';
+    toast(ok?'同步完成 ✓':'無法連線');
+  });
+}
+
 var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzffWsHWvwK6LxcuaGO1NtLpU09YxwNvWpKgkT-lmtxgzxZAyt9LXuLWHDTXGAI4V28/exec';
 var LS_KEY = 'prs-final';
 var LS_CHAT = 'prs-chat';
@@ -739,19 +1168,26 @@ async function assignPoster() {
   var loadTxt=document.getElementById('asgn-loading-text');
   btn.disabled=true; loadEl.style.display='block';
   var imageUrl='';
+  var posterId2=Date.now();
   try {
-    if(pendingAsgnImgB64){
-      loadTxt.textContent='⏳ 上傳圖片中...';
-      imageUrl=await uploadImageToDrive(pendingAsgnImgB64,'poster_assign_'+Date.now()+'.jpg');
-    }
-    loadTxt.textContent='⏳ 儲存資料中...';
-    var poster={id:Date.now(),name:name,assignee:assignee,
+    var poster={id:posterId2,name:name,assignee:assignee,
       progress:Math.min(100,Math.max(0,parseInt(document.getElementById('asgn-progress').value)||0)),
       note:document.getElementById('asgn-note').value.trim(),
       members:[assignee],status:document.getElementById('asgn-status').value||'draft',
-      reviewNote:'',reviewedBy:'',reviewedAt:'',imageUrl:imageUrl};
+      reviewNote:'',reviewedBy:'',reviewedAt:'',imageUrl:''};
+    // 先存資料
     db.posters.push(poster); lsSave();
+    loadTxt.textContent='⏳ 儲存資料中...';
     var ok=await cloudSave();
+    // 再上傳圖片
+    if(pendingAsgnImgB64){
+      loadTxt.textContent='⏳ 上傳圖片至 Google Drive...';
+      try {
+        var imgUrl2=await uploadImageToDrive(pendingAsgnImgB64,'poster_asgn_'+posterId2+'.jpg');
+        var pp=db.posters.find(function(x){return x.id===posterId2;});
+        if(pp){ pp.imageUrl=imgUrl2; lsSave(); await cloudSave(); }
+      } catch(imgErr2){ toast('資料已同步，但圖片上傳失敗：'+imgErr2.message); }
+    }
     loadEl.style.display='none'; btn.disabled=false;
     await chatNotify('📋 *新任務分派*\n\n海報：'+name+'\n負責：'+assignee+'\n狀態：'+slabel(poster.status));
     clearAssign();
@@ -856,18 +1292,22 @@ async function submitUpdate() {
   var loadTxt = document.getElementById('sub-upd-loading-text');
   btn.disabled = true; loadEl.style.display = 'block';
   try {
-    if (pendingUpdImgB64) {
-      loadTxt.textContent = '⏳ 上傳圖片中...';
-      p.imageUrl = await uploadImageToDrive(pendingUpdImgB64, 'poster_upd_'+Date.now()+'.jpg');
-    }
+    // 先更新資料並存到雲端
     p.progress = newProgress;
     p.status = newStatus;
     if (newNote) p.note = newNote;
-    // 重新提交時清除舊審核記錄
     if (newStatus === 'submitted') { p.reviewNote = ''; p.reviewedBy = ''; p.reviewedAt = ''; }
     lsSave();
-    loadTxt.textContent = '⏳ 同步中...';
+    loadTxt.textContent = '⏳ 同步資料中...';
     var ok = await cloudSave();
+    // 再上傳圖片
+    if (pendingUpdImgB64) {
+      loadTxt.textContent = '⏳ 上傳圖片至 Google Drive...';
+      try {
+        p.imageUrl = await uploadImageToDrive(pendingUpdImgB64, 'poster_upd_'+Date.now()+'.jpg');
+        lsSave(); await cloudSave();
+      } catch(imgErr3){ toast('資料已同步，但圖片上傳失敗：'+imgErr3.message); }
+    }
     loadEl.style.display = 'none'; btn.disabled = false;
     if (newStatus === 'submitted') await chatNotify('📤 *海報更新並提交審核*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+'\n進度：'+newProgress+'%\n\n請前往審核。');
     clearSubUpdate();
@@ -893,36 +1333,35 @@ async function submitPoster() {
   if(!name){toast('請填寫海報名稱');return;}
   var status=document.getElementById('sub-status').value;
   if(status==='submitted'&&!pendingImgB64){toast('提交審核前請上傳圖片');return;}
-
   var btn=document.getElementById('sub-btn');
   var loadEl=document.getElementById('sub-loading');
   var loadTxt=document.getElementById('sub-loading-text');
   btn.disabled=true; loadEl.style.display='block';
-
-  var imageUrl='';
-  try {
-    if(pendingImgB64){
-      loadTxt.textContent='⏳ 上傳圖片中（圖片存至 Google Drive）...';
-      imageUrl=await uploadImageToDrive(pendingImgB64, 'poster_'+Date.now()+'.jpg');
-      loadTxt.textContent='✓ 圖片上傳完成，正在儲存資料...';
+  var assignee=document.getElementById('sub-assignee').value;
+  var posterId=Date.now();
+  var poster={id:posterId,name:name,assignee:assignee,
+    progress:Math.min(100,Math.max(0,parseInt(document.getElementById('sub-progress').value)||100)),
+    note:document.getElementById('sub-note').value.trim(),
+    members:assignee?[assignee]:[],status:status,
+    reviewNote:'',reviewedBy:'',reviewedAt:'',imageUrl:''};
+  db.posters.push(poster); lsSave();
+  loadTxt.textContent='⏳ 儲存資料中...';
+  var ok=await cloudSave();
+  if(pendingImgB64){
+    loadTxt.textContent='⏳ 上傳圖片至 Google Drive...';
+    try {
+      var imageUrl=await uploadImageToDrive(pendingImgB64,'poster_'+posterId+'.jpg');
+      var pp=db.posters.find(function(x){return x.id===posterId;});
+      if(pp){ pp.imageUrl=imageUrl; lsSave(); await cloudSave(); }
+    } catch(imgErr){
+      toast('資料已同步，圖片上傳失敗：'+imgErr.message);
     }
-    var assignee=document.getElementById('sub-assignee').value;
-    var poster={id:Date.now(),name:name,assignee:assignee,
-      progress:Math.min(100,Math.max(0,parseInt(document.getElementById('sub-progress').value)||100)),
-      note:document.getElementById('sub-note').value.trim(),
-      members:assignee?[assignee]:[],status:status,
-      reviewNote:'',reviewedBy:'',reviewedAt:'',imageUrl:imageUrl};
-    db.posters.push(poster); lsSave();
-    var ok=await cloudSave();
-    loadEl.style.display='none'; btn.disabled=false;
-    if(status==='submitted') await chatNotify('📤 *海報提交審核*\n\n海報：'+name+(assignee?'\n上傳者：'+assignee:'')+'\n\n請前往審核。');
-    clearSubmit();
-    toast(ok?(status==='submitted'?'海報已提交，圖片已存雲端 ✓':'已暫存 ✓'):'已儲存本機，雲端稍後同步');
-    go('dashboard');
-  } catch(e) {
-    loadEl.style.display='none'; btn.disabled=false;
-    toast('上傳失敗：'+e.message+'\n請稍後重試');
   }
+  loadEl.style.display='none'; btn.disabled=false;
+  if(status==='submitted') await chatNotify('📤 *海報提交審核*\n\n海報：'+name+(assignee?'\n上傳者：'+assignee:'')+'\n\n請前往審核。');
+  clearSubmit();
+  toast(ok?(status==='submitted'?'已提交待審核 ✓':'已暫存'):'已儲存本機，雲端稍後同步');
+  go('dashboard');
 }
 function clearSubmit(){
   ['sub-name','sub-note'].forEach(function(id){document.getElementById(id).value='';});
@@ -1028,6 +1467,7 @@ function syncSettingsUI(){
   var e1=document.getElementById('cfg-event'),e2=document.getElementById('cfg-reviewer');
   if(e1&&document.activeElement!==e1)e1.value=db.settings.event||'';
   if(e2&&document.activeElement!==e2)e2.value=db.settings.reviewer||'';
+  var ep=document.getElementById('cfg-admin-pin');if(ep&&document.activeElement!==ep)ep.value='';
   document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
   document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
   var tc=document.getElementById('tag-chat');
@@ -1056,10 +1496,13 @@ function promptChat(){var v=prompt('貼上 Google Chat Webhook 網址：',chatUr
 async function saveSettings(){
   db.settings.event=document.getElementById('cfg-event').value.trim();
   db.settings.reviewer=document.getElementById('cfg-reviewer').value.trim()||'審核委員';
+  var newPin=document.getElementById('cfg-admin-pin').value.trim();
+  if(newPin)db.settings.adminPin=newPin;
   lsSave();await cloudSave();
   document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
   document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
-  toast('設定已儲存 ✓');
+  if(newPin)document.getElementById('cfg-admin-pin').value='';
+  toast('設定已儲存 ✓'+(newPin?' 密碼已更新':''));
 }
 function resetLocal(){
   if(!confirm('清除本機快取？頁面將重新整理。'))return;
@@ -1109,32 +1552,43 @@ var _tt;
 function toast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},3500);}
 
 // ── 初始化 ───────────────────────────────────
+// ── 初始化 ──────────────────────────────────
 lsLoad();
-renderDashboard();
-document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
-document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
-document.getElementById('cfg-event').value=db.settings.event||'';
-document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';
-renderMemberEditor();
-fillSelect('asgn-assignee','— 選擇組員 —');
-fillSelect('sub-assignee','— 選擇（可略過）—');
-// 雲端同步獨立執行，錯誤不影響頁面操作
+
+// 先顯示登入畫面
+document.getElementById('login-screen').style.display = 'flex';
+document.getElementById('admin-app').style.display = 'none';
+initLogin();
+
+// 背景從雲端載入資料（不阻擋登入畫面）
 setTimeout(function() {
   cloudLoad().then(function(ok) {
-    if (ok) {
+    initLogin(); // 更新登入畫面上的活動名稱
+    if (currentRole === 'admin') {
       renderDashboard();
-      var e1 = document.getElementById('cfg-event');
-      var e2 = document.getElementById('cfg-reviewer');
-      if (e1) e1.value = db.settings.event || '';
-      if (e2) e2.value = db.settings.reviewer || '';
+      var e1=document.getElementById('cfg-event');var e2=document.getElementById('cfg-reviewer');
+      if(e1)e1.value=db.settings.event||'';if(e2)e2.value=db.settings.reviewer||'';
       renderMemberEditor();
+    } else if (currentRole === 'member') {
+      renderMyPosters();renderMSubUpdateList();
+      document.getElementById('member-event-name').textContent=db.settings.event||'海報審核';
     }
-  }).catch(function(e) {
-    setSyncState('error');
-    updateSyncLabel('連線失敗，使用本機資料');
-    console.error('init cloudLoad error:', e);
+  }).catch(function(e){
+    setSyncState('error');updateSyncLabel('連線失敗，使用本機資料');
   });
-}, 100);
+}, 200);
+
+// 管理員介面初始化（在進入後才執行）
+function initAdminUI() {
+  renderDashboard();
+  document.getElementById('tb-event').textContent=db.settings.event||'海報審核';
+  document.getElementById('ds-event').textContent=db.settings.event||'活動名稱未設定';
+  document.getElementById('cfg-event').value=db.settings.event||'';
+  document.getElementById('cfg-reviewer').value=db.settings.reviewer||'';
+  renderMemberEditor();
+  fillSelect('asgn-assignee','— 選擇組員 —');
+  fillSelect('sub-assignee','— 選擇（可略過）—');
+}
 </script>
 </body>
 </html>
