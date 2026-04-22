@@ -892,11 +892,13 @@ async function mSubmitNew() {
 }
 
 function memberForceSync() {
-  setSyncState('syncing');
+  toast('同步中...');
   cloudLoad().then(function(ok){
-    renderMyPosters();renderMSubUpdateList();
+    renderMyPosters();
+    renderMSubUpdateList();
+    fillSelect('msub-assignee','— 選擇（可略過）—');
     document.getElementById('member-event-name').textContent=db.settings.event||'海報審核';
-    toast(ok?'同步完成 ✓':'無法連線');
+    toast(ok?'同步完成 ✓':'無法連線，顯示本機資料');
   });
 }
 
@@ -1042,14 +1044,33 @@ async function forceSync() {
 
 try {
   new BroadcastChannel('prs').onmessage = function(e) {
-    if (e.data && e.data.type==='reload') { cloudLoad().then(function(){ if(currentPage!=='settings') renderPage(); }); }
+    if (e.data && e.data.type==='reload') {
+      cloudLoad().then(function(ok) {
+        if (!ok) return;
+        if (currentRole === 'member') {
+          renderMyPosters();
+          renderMSubUpdateList();
+        } else if (currentRole === 'admin') {
+          if (currentPage !== 'settings') renderPage();
+        }
+      });
+    }
   };
 } catch(e) {}
 
 setInterval(function(){
-  if(currentPage==='settings') return;
-  cloudLoad().then(function(ok){ if(ok) renderPage(); });
-}, 30000);
+  cloudLoad().then(function(ok) {
+    if (!ok) return;
+    if (currentRole === 'member') {
+      // 組員介面：自動刷新「我的海報」和提交選單
+      renderMyPosters();
+      renderMSubUpdateList();
+      document.getElementById('member-event-name').textContent = db.settings.event || '海報審核';
+    } else if (currentRole === 'admin') {
+      if (currentPage !== 'settings') renderPage();
+    }
+  });
+}, 15000);
 
 async function chatNotify(txt) {
   if(!chatUrl) return;
@@ -1444,7 +1465,10 @@ function openReviewAction(id,action){
 async function doApprove(id){
   var p=db.posters.find(function(x){return x.id===id;});if(!p)return;
   p.status='approved';p.reviewedBy=db.settings.reviewer||'審核委員';p.reviewedAt=new Date().toLocaleDateString('zh-TW');p.reviewNote='';
-  lsSave();await cloudSave();
+  lsSave();
+  // 廣播給所有已開啟的分頁（組員介面會立即收到並更新）
+  try { new BroadcastChannel('prs').postMessage({type:'reload'}); } catch(e){}
+  await cloudSave();
   await chatNotify('✅ *海報審核通過*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+'\n審核：'+p.reviewedBy+'\n\n恭喜通過！');
   closeSheet('sheet-review');renderReview();toast('已通過 ✓');
 }
@@ -1453,7 +1477,9 @@ async function doReject(id){
   if(!note){toast('請填寫退回原因');return;}
   var p=db.posters.find(function(x){return x.id===id;});if(!p)return;
   p.status='rejected';p.reviewNote=note;p.reviewedBy=db.settings.reviewer||'審核委員';p.reviewedAt=new Date().toLocaleDateString('zh-TW');
-  lsSave();await cloudSave();
+  lsSave();
+  try { new BroadcastChannel('prs').postMessage({type:'reload'}); } catch(e){}
+  await cloudSave();
   await chatNotify('🔁 *海報需要修改*\n\n海報：'+p.name+'\n組員：'+(p.assignee||'─')+'\n\n修改意見：\n'+note);
   closeSheet('sheet-review');renderReview();toast('已退回');
 }
